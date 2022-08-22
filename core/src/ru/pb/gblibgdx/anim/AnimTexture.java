@@ -9,26 +9,23 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AnimTexture extends Anim{
+public class AnimTexture extends Anim {
     private Texture img;
+    private boolean horizontalSprite;
 
 
-    public AnimTexture(String image_name, float frameDuration, int imagesCountWidth, int imagesCountHeight) {
+    public AnimTexture(String image_name, float frameDuration, int imagesCountWidth, int imagesCountHeight, boolean horizontalSprite) {
         this.frameDuration = frameDuration;
 
         img = new Texture(image_name);
+        this.horizontalSprite = horizontalSprite;
 
         this.regionHeight = img.getHeight() / imagesCountHeight;
         this.regionWidth = img.getWidth() / imagesCountWidth;
     }
 
 
-    public void initializeAction(Movable.Actions action, int start, int end, Animation.PlayMode playMode, boolean horizontalSprite) {
-        initializeAction(action, start, end, playMode, false, false, horizontalSprite);
-
-    }
-
-    public void initializeAction(Movable.Actions action, int start, int end, Animation.PlayMode playMode, boolean flipX, boolean flipY, boolean horizontalSprite) {
+    public void initializeAction(Movable.Actions action, int start, int end, Animation.PlayMode playMode) {
         TextureRegion region0 = new TextureRegion(img);
         TextureRegion[][] regions = region0.split(regionWidth, regionHeight);
         TextureRegion[] regions1 = new TextureRegion[regions.length * regions[1].length];
@@ -55,7 +52,6 @@ public class AnimTexture extends Anim{
         animationsMap.put(action, anim);
 
     }
-
 
 
     public void dispose() {

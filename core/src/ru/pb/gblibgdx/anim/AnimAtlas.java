@@ -27,13 +27,7 @@ public class AnimAtlas extends Anim{
 
     }
 
-
     public void initializeAction(Movable.Actions action, String name, Animation.PlayMode playMode) {
-        initializeAction(action, name, playMode, false, false);
-
-    }
-
-    public void initializeAction(Movable.Actions action, String name, Animation.PlayMode playMode, boolean flipX, boolean flipY) {
 
         anim = new Animation<TextureRegion>(frameDuration, atlas.findRegions(name));
 

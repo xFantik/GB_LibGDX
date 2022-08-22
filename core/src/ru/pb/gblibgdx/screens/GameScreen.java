@@ -25,11 +25,9 @@ public class GameScreen implements Screen {
     public GameScreen(Main main) {
         this.main = main;
         batch = new SpriteBatch();
-        dino = CharactersFactory.getGreenDino(main);
+        dino = CharactersFactory.getDino(main);
         main_rectangle = new Rectangle(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         dino.setAction(Movable.Actions.IDLE);
-
-
     }
 
     @Override
@@ -39,9 +37,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-
         ScreenUtils.clear(0, 0.3f, 0, 1);
-
 
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             dino.setReverse(false);
@@ -103,6 +99,5 @@ public class GameScreen implements Screen {
     @Override
     public void dispose() {
         batch.dispose();
-
     }
 }
