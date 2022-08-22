@@ -25,7 +25,7 @@ public class GameScreen implements Screen {
     public GameScreen(Main main) {
         this.main = main;
         batch = new SpriteBatch();
-        dino = CharactersFactory.getDino(main);
+        dino = CharactersFactory.getGreenDino(main);
         main_rectangle = new Rectangle(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         dino.setAction(Movable.Actions.IDLE);
     }
@@ -45,14 +45,14 @@ public class GameScreen implements Screen {
         } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             dino.setReverse(true);
             dino.setAction(Movable.Actions.RUN);
-        } else if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-            dino.setAction(Movable.Actions.JUMP);
         } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
             dino.setAction(Movable.Actions.DEAD);
         } else {
             dino.setAction(Movable.Actions.IDLE);
         }
 
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE))
+            dino.jump();
 
         dino.move(Gdx.graphics.getDeltaTime());
 

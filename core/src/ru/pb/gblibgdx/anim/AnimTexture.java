@@ -24,7 +24,6 @@ public class AnimTexture extends Anim {
         this.regionWidth = img.getWidth() / imagesCountWidth;
     }
 
-
     public void initializeAction(Movable.Actions action, int start, int end, Animation.PlayMode playMode) {
         TextureRegion region0 = new TextureRegion(img);
         TextureRegion[][] regions = region0.split(regionWidth, regionHeight);

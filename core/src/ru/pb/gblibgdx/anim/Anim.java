@@ -10,6 +10,7 @@ import java.util.Map;
 public abstract class Anim {
     protected Animation<TextureRegion> anim;
     protected float animTime;
+    protected float jumpTime;
     protected float frameDuration;
     protected int regionWidth, regionHeight;
 
@@ -25,11 +26,22 @@ public abstract class Anim {
 
 
     public void addDeltaTime(float delta) {
+        jumpTime += delta;
         animTime += delta;
     }
 
     public TextureRegion getFrame() {
+        if (jumpTime < 0) {
+            return animationsMap.get(Movable.Actions.JUMP).getKeyFrame(this.animTime);
+        }
         return anim.getKeyFrame(this.animTime);
+    }
+
+    public void jump(float jumpTime) {
+        if (this.jumpTime >= 0) {
+            animTime = 0;
+            this.jumpTime = jumpTime;
+        }
     }
 
     public abstract void dispose();

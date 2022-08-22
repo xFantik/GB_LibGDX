@@ -13,11 +13,8 @@ public class Main extends Game {
     @Override
     public void create() {
         setScreen(new MenuScreen(this));
-
         mapSizeX =  Gdx.graphics.getWidth();
         mapSizeY =  Gdx.graphics.getHeight();
-
-
     }
     @Override
     public void dispose() {
