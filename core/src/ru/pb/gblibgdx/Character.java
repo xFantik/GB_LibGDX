@@ -16,7 +16,7 @@ public class Character implements Movable {
 
 
 
-    public Character(Main main, Anim anim, float speed, float intX, float intY) {
+    public Character(Anim anim, float speed, float intX, float intY) {
         this.anim = anim;
         this.speed = speed;
         this.intX = intX;
@@ -57,7 +57,7 @@ public class Character implements Movable {
     }
 
     public void jump(){
-        anim.jump(-2);
+        anim.jump();
     }
 
     public void setReverse(boolean reverse) {

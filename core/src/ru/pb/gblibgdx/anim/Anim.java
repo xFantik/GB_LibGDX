@@ -11,7 +11,7 @@ public abstract class Anim {
     protected Animation<TextureRegion> anim;
     protected float animTime;
     protected float jumpTime;
-    protected float frameDuration;
+    protected float defaultFrameDuration;
     protected int regionWidth, regionHeight;
 
     protected Map<Movable.Actions, Animation<TextureRegion>> animationsMap = new HashMap<>();
@@ -20,7 +20,8 @@ public abstract class Anim {
         if (animationsMap.get(action) == null)
             return false;
         anim = animationsMap.get(action);
-        animTime = 0;
+        if (jumpTime >= 0)
+            animTime = 0;
         return true;
     }
 
@@ -37,10 +38,10 @@ public abstract class Anim {
         return anim.getKeyFrame(this.animTime);
     }
 
-    public void jump(float jumpTime) {
+    public void jump() {
         if (this.jumpTime >= 0) {
             animTime = 0;
-            this.jumpTime = jumpTime;
+            this.jumpTime = - animationsMap.get(Movable.Actions.JUMP).getAnimationDuration();
         }
     }
 

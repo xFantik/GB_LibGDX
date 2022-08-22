@@ -6,8 +6,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import ru.pb.gblibgdx.Movable;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 public class AnimTexture extends Anim {
     private Texture img;
@@ -15,7 +13,7 @@ public class AnimTexture extends Anim {
 
 
     public AnimTexture(String image_name, float frameDuration, int imagesCountWidth, int imagesCountHeight, boolean horizontalSprite) {
-        this.frameDuration = frameDuration;
+        this.defaultFrameDuration = frameDuration;
 
         img = new Texture(image_name);
         this.horizontalSprite = horizontalSprite;
@@ -25,6 +23,11 @@ public class AnimTexture extends Anim {
     }
 
     public void initializeAction(Movable.Actions action, int start, int end, Animation.PlayMode playMode) {
+        initializeAction(action,  start,  end,  playMode, this.defaultFrameDuration);
+
+    }
+
+    public void initializeAction(Movable.Actions action, int start, int end, Animation.PlayMode playMode, float frameDuration) {
         TextureRegion region0 = new TextureRegion(img);
         TextureRegion[][] regions = region0.split(regionWidth, regionHeight);
         TextureRegion[] regions1 = new TextureRegion[regions.length * regions[1].length];

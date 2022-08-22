@@ -34,7 +34,7 @@ public class CharactersFactory {
             anim.initializeAction(Movable.Actions.DEAD, 25, 36, Animation.PlayMode.NORMAL);
             anim.initializeAction(Movable.Actions.JUMP, 41, 49, Animation.PlayMode.LOOP);
 
-            dino = new Character(main, anim, 150, 0,2);
+            dino = new Character(anim, 150, 0,2);
 
         }
         return dino;
@@ -45,8 +45,8 @@ public class CharactersFactory {
             anim.initializeAction(Movable.Actions.IDLE, "Idle", Animation.PlayMode.LOOP);
             anim.initializeAction(Movable.Actions.RUN, "Run", Animation.PlayMode.LOOP);
             anim.initializeAction(Movable.Actions.DEAD, "Dead", Animation.PlayMode.NORMAL);
-            anim.initializeAction(Movable.Actions.JUMP,"Jump", Animation.PlayMode.LOOP);
-            greenDino = new Character(main, anim, 150, 0,2);
+            anim.initializeAction(Movable.Actions.JUMP,"Jump", Animation.PlayMode.NORMAL, 1/10f);
+            greenDino = new Character(anim, 150, 0,2);
         }
         return greenDino;
     }

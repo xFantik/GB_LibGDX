@@ -3,7 +3,10 @@ package ru.pb.gblibgdx.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.ScreenUtils;
 import ru.pb.gblibgdx.*;
@@ -60,6 +63,8 @@ public class GameScreen implements Screen {
         dinoRegionHeight = dino.getFrame().getRegionHeight() * dinoFactor;
 
 
+
+
         if (!main_rectangle.contains(new Rectangle(dino.getX(), dino.getY(), dinoRegionWidth, dinoRegionHeight))) {
             dino.undo(Gdx.graphics.getDeltaTime());
         }
@@ -68,6 +73,7 @@ public class GameScreen implements Screen {
         batch.draw(dino.getFrame(), dino.getX(), dino.getY(), dinoRegionWidth, dinoRegionHeight);
 
         batch.end();
+
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             dispose();
