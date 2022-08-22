@@ -8,7 +8,7 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setForegroundFPS(60);
-		config.setTitle("My-GDX-Game");
-		new Lwjgl3Application(new GB_LibGDX(), config);
+		config.setTitle("DINO Game");
+		new Lwjgl3Application(new Main(), config);
 	}
 }
