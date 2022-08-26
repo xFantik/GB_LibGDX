@@ -1,27 +1,28 @@
 package ru.pb.gblibgdx;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import ru.pb.gblibgdx.anim.Anim;
 
 public class Character implements Movable {
 
-    Anim anim;
-    float speed;
-    float intX;
-    float intY;
 
-    private int mapSizeX, mapSizeY;
+    private Anim anim;
+    private float speed;
+    private float intX;
+    private float intY;
 
-    Actions currentAction;
+    private Actions currentAction;
+    private boolean reverse = false;
 
-    public Character(Anim anim, float speed, float intX, float intY, int mapSizeX, int mapSizeY) {
+
+
+    public Character(Anim anim, float speed, float intX, float intY) {
         this.anim = anim;
         this.speed = speed;
         this.intX = intX;
         this.intY = intY;
-        setAction(Actions.GO);
+        setAction(Actions.IDLE);
 
-        this.mapSizeX = mapSizeX;
-        this.mapSizeY = mapSizeY;
 
     }
 
@@ -33,60 +34,38 @@ public class Character implements Movable {
     }
 
     @Override
-    public boolean move(float deltaTime) {
+    public void move(float deltaTime) {
         anim.addDeltaTime(deltaTime);
         switch (currentAction) {
-            case GO:
-                if (intX + speed * deltaTime + 80 <= mapSizeX) {
+            case RUN:
+                if (!reverse)
                     intX += speed * deltaTime;
-                } else {
-                    return false;
-                }
-                break;
-            case GO_LEFT:
-                if (intX - speed * deltaTime >= 0) {
+                else
                     intX -= speed * deltaTime;
-                } else {
-
-                    return false;
-                }
-                break;
-            case GO_UP:
-                if (intY + speed * deltaTime + 80 <= mapSizeY) {
-                    intY += speed * deltaTime;
-                } else {
-
-                    return false;
-                }
-                break;
-            case GO_DOWN:
-                if (intY - speed * deltaTime >= 0) {
-                    intY -= speed * deltaTime;
-                } else {
-                    return false;
-                }
                 break;
         }
-        return true;
+    }
+    public void undo(float deltaTime){
+        switch (currentAction) {
+            case RUN:
+                if (!reverse)
+                    intX -= speed * deltaTime;
+                else
+                    intX += speed * deltaTime;
+                break;
+        }
     }
 
-    public void reverse() {
-        switch (currentAction) {
-            case GO:
-                currentAction = Actions.GO_LEFT;
-                break;
-            case GO_LEFT:
-                currentAction = Actions.GO;
-                break;
-            case GO_UP:
-                currentAction = Actions.GO_DOWN;
-                break;
-            case GO_DOWN:
-                currentAction = Actions.GO_UP;
-                break;
-        }
+    public void jump(){
+        anim.jump();
+    }
 
-        anim.setAction(currentAction);
+    public void setReverse(boolean reverse) {
+        this.reverse = reverse;
+    }
+
+    public boolean getReverse() {
+        return reverse;
     }
 
     public float getX() {
@@ -99,11 +78,23 @@ public class Character implements Movable {
 
 
     public TextureRegion getFrame() {
+        if (anim.getFrame().isFlipX() && !reverse)
+            anim.getFrame().flip(true, false);
+
+        if (!anim.getFrame().isFlipX() && reverse)
+            anim.getFrame().flip(true, false);
+
+
         return anim.getFrame();
     }
 
     public void dispose() {
         anim.dispose();
+    }
+
+    public void reset(int x, int y) {
+        intX = x;
+        intY = y;
     }
 
 }

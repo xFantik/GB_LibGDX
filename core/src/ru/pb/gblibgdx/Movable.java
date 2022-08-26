@@ -2,14 +2,14 @@ package ru.pb.gblibgdx;
 
 public interface Movable {
     enum Actions {
-        GO, GO_LEFT, GO_UP, GO_DOWN
+         RUN, JUMP, IDLE, DEAD
     }
 
-    boolean move (float deltaTime);
+    void move (float deltaTime);
+    void undo(float deltaTime);
     void setAction(Actions action);
     float getX();
     float getY();
-    void dispose();
-    void reverse();
+    void setReverse(boolean reverse);
 
 }
