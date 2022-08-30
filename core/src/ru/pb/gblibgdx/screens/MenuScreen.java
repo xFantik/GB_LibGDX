@@ -90,7 +90,6 @@ public class MenuScreen implements Screen {
             batch.draw(menu_buttons[4][1], rect_btn_3.x, rect_btn_3.y, rect_btn_3.getWidth(), rect_btn_3.getHeight());
 
 
-
         batch.end();
 
 

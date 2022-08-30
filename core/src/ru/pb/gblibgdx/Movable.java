@@ -6,7 +6,6 @@ public interface Movable {
     }
 
     void move (float deltaTime);
-    void undo(float deltaTime);
     void setAction(Actions action);
     float getX();
     float getY();

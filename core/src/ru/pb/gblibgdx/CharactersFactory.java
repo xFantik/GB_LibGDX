@@ -46,7 +46,7 @@ public class CharactersFactory {
             anim.initializeAction(Movable.Actions.RUN, "Run", Animation.PlayMode.LOOP);
             anim.initializeAction(Movable.Actions.DEAD, "Dead", Animation.PlayMode.NORMAL);
             anim.initializeAction(Movable.Actions.JUMP,"Jump", Animation.PlayMode.NORMAL, 1/10f);
-            greenDino = new Character(anim, 150, 0,2);
+            greenDino = new Character(anim, 150, 0,47);
         }
         return greenDino;
     }
