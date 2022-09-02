@@ -69,6 +69,9 @@ public class GameScreen implements Screen {
     private TextureRegion carTexture;
 
     private static final int heroSpeed = 100;
+    private static final float heroSpeedFactor = 0.7f;
+
+    //    private static final int heroSpeedJump = 80;
     private static final int heroJumpSpeed = 160;
     private static final int forceInJump = 200000;
 
@@ -87,6 +90,8 @@ public class GameScreen implements Screen {
 
     private final ArrayList<Rectangle> dangersRect = new ArrayList<>();
     private boolean heroDead = false;
+
+    public static boolean heroOnGround;
 
 
     public GameScreen(Main main) {
@@ -189,9 +194,9 @@ public class GameScreen implements Screen {
 
 
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && !heroDead) {
-            if (isOnGround())
+            if (heroOnGround)
                 hero.setLinearVelocity(heroSpeed, hero.getLinearVelocity().y);
-            else if (hero.getLinearVelocity().x < heroSpeed) {
+            else if (hero.getLinearVelocity().x < heroSpeed * heroSpeedFactor) {
                 if (hero.getLinearVelocity().x < 0) {
                     hero.setLinearVelocity(0, hero.getLinearVelocity().y);
                 }
@@ -202,10 +207,10 @@ public class GameScreen implements Screen {
 
 
         } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && !heroDead) {
-            if (isOnGround())
+            if (heroOnGround)
                 hero.setLinearVelocity(-heroSpeed, hero.getLinearVelocity().y);
 
-            else if (hero.getLinearVelocity().x > -heroSpeed) {
+            else if (hero.getLinearVelocity().x > -heroSpeed * heroSpeedFactor) {
                 if (hero.getLinearVelocity().x > 0) {
                     hero.setLinearVelocity(0, hero.getLinearVelocity().y);
                 }
@@ -223,11 +228,12 @@ public class GameScreen implements Screen {
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && !heroDead) {
-            if (isOnGround()) {
+            if (heroOnGround) {
                 dino.jump();
                 sounds.get(SoundTag.JUMP).play(0.5f);
 //                hero.applyForceToCenter(0, 6000, false);
-                hero.setLinearVelocity(hero.getLinearVelocity().x, heroJumpSpeed);
+                hero.setLinearVelocity(hero.getLinearVelocity().x * heroSpeedFactor, heroJumpSpeed);
+                heroOnGround = false;
                 // hero.getFixtureList().get(0).setFriction(0);
             }
         }
@@ -307,11 +313,11 @@ public class GameScreen implements Screen {
                 batch.draw(imgKey, (heroRect.x + heroRect.width / 3 + imgKey.getWidth()) * Physics.PPM, (heroRect.y + heroRect.height / 3) * Physics.PPM, -imgKey.getWidth(), imgKey.getHeight());
         } else if (isBoxOpen) {
             if (dino.getReverse())
-                batch.draw(imgCake, (heroRect.x- heroRect.width/2 +2) * Physics.PPM, (heroRect.y+5) * Physics.PPM, imgCake.getWidth()/1.5f, imgCake.getHeight()/1.5f);
+                batch.draw(imgCake, (heroRect.x - heroRect.width / 2 + 2) * Physics.PPM, (heroRect.y + 5) * Physics.PPM, imgCake.getWidth() / 1.5f, imgCake.getHeight() / 1.5f);
             else
-                batch.draw(imgCake, (heroRect.x + heroRect.width -6) * Physics.PPM, (heroRect.y+5) * Physics.PPM, imgCake.getWidth()/1.5f, imgCake.getHeight()/1.5f);
+                batch.draw(imgCake, (heroRect.x + heroRect.width - 6) * Physics.PPM, (heroRect.y + 5) * Physics.PPM, imgCake.getWidth() / 1.5f, imgCake.getHeight() / 1.5f);
         }
-        batch.draw(carTexture, carRect.x * Physics.PPM, carRect.y * Physics.PPM, carRect.width / 2, carRect.height / 2, carRect.width, carRect.height, 1, 1, car.getAngle() * 55);
+        batch.draw(carTexture, carRect.x * Physics.PPM, carRect.y * Physics.PPM, carRect.width / 2, carRect.height / 2, carRect.width, carRect.height, 1, 1, car.getAngle() * 57);
         batch.end();
 
 
@@ -342,14 +348,6 @@ public class GameScreen implements Screen {
         }
     }
 
-    private boolean isOnGround() {
-//        System.out.println(hero.getLinearVelocity().y);
-        if (Math.abs(hero.getLinearVelocity().y) < 0.005f) {
-//            System.out.println("on ground")
-            return true;
-        }
-        return false;
-    }
 
     @Override
     public void resize(int width, int height) {

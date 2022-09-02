@@ -19,6 +19,7 @@ public class Physics {
     public Physics() {
         world = new World(new Vector2(0, -9.81f), true);  //определяет гравитацию
         debugRenderer = new Box2DDebugRenderer();
+        world.setContactListener(new MyContactListener());
 
     }
 
@@ -46,16 +47,26 @@ public class Physics {
 
         Rectangle rect2 = object2.getRectangle();
         PolygonShape polygonShape = new PolygonShape();
-        fDef.shape = polygonShape;
-        polygonShape.setAsBox(rect2.width / 2 / PPM, rect2.height / 2 / PPM, new Vector2(0, -rect.height / 2 /Physics.PPM), 0);
+
+        polygonShape.setAsBox(rect2.width / 2 / PPM, rect2.height / 2 / PPM, new Vector2(0, -rect.height / 2 / Physics.PPM), 0);
         fDef.shape = polygonShape;
 
         fDef.friction = DEFAULT_FRICTION;
 
-        body.createFixture(fDef).setUserData("wall"); //любой класс, можно передать сложный объект
+        body.createFixture(fDef).setUserData(object.getName()); //любой класс, можно передать сложный объект
+
+
+        polygonShape = new PolygonShape();
+        polygonShape.setAsBox(object.getRectangle().width / 2.2f / PPM, object.getRectangle().height / 4 / PPM, new Vector2(0, -object.getRectangle().getWidth() / 2), 0);
+        fDef = new FixtureDef();
+        fDef.shape = polygonShape;
+        fDef.isSensor =true;
+        body.createFixture(fDef).setUserData("foot");
 
 
         polygonShape.dispose();
+
+
         return body;
     }
 
@@ -108,7 +119,7 @@ public class Physics {
 
         Body body = world.createBody(def);
 
-        body.createFixture(fDef).setUserData("wall"); //любой класс, можно передать сложный объект
+        body.createFixture(fDef).setUserData(object.getName()); //любой класс, можно передать сложный объект
 
 
         polygonShape.dispose();
