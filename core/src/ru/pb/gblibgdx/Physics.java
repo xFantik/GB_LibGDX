@@ -13,6 +13,7 @@ public class Physics {
     private static final BodyDef.BodyType DEFAULT_BODY_TYPE = BodyDef.BodyType.StaticBody;
     private static final float DEFAULT_GRAVITY_SCALE = 12;
     public static final float DEFAULT_FRICTION = 5;
+    public static final float PPM = 1;
 
 
     public Physics() {
@@ -34,7 +35,6 @@ public class Physics {
     }
 
 
-
     public Body addObject(RectangleMapObject object, RectangleMapObject object2) {
         FixtureDef fDef = new FixtureDef();
 
@@ -47,13 +47,12 @@ public class Physics {
         Rectangle rect2 = object2.getRectangle();
         PolygonShape polygonShape = new PolygonShape();
         fDef.shape = polygonShape;
-        polygonShape.setAsBox(rect2.width / 2, rect2.height / 2, new Vector2(0, -rect.height/2), 0);
+        polygonShape.setAsBox(rect2.width / 2 / PPM, rect2.height / 2 / PPM, new Vector2(0, -rect.height / 2 /Physics.PPM), 0);
         fDef.shape = polygonShape;
 
         fDef.friction = DEFAULT_FRICTION;
 
         body.createFixture(fDef).setUserData("wall"); //любой класс, можно передать сложный объект
-
 
 
         polygonShape.dispose();
@@ -67,9 +66,9 @@ public class Physics {
 
 
         Rectangle rect = object.getRectangle();
-        def.position.set(rect.x + rect.width / 2, rect.y + rect.height / 2);
+        def.position.set(rect.x / Physics.PPM + rect.width / 2 / PPM, rect.y / Physics.PPM + rect.height / 2 / PPM);
 
-        polygonShape.setAsBox(rect.width / 2, rect.height / 2);
+        polygonShape.setAsBox(rect.width / 2 / PPM, rect.height / 2 / PPM);
         fDef.shape = polygonShape;
 
 
@@ -92,11 +91,9 @@ public class Physics {
         def.gravityScale = DEFAULT_GRAVITY_SCALE;
 
 
-
         if (object.getProperties().get("friction") == null) {
             fDef.friction = DEFAULT_FRICTION;                                          // трение
-        }
-        else{
+        } else {
             fDef.friction = (float) object.getProperties().get("friction");
         }
 
@@ -107,7 +104,6 @@ public class Physics {
             fDef.restitution = 0;                                       // упругость
         } else
             fDef.restitution = (float) object.getProperties().get("restitution");
-
 
 
         Body body = world.createBody(def);

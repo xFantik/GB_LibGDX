@@ -60,6 +60,7 @@ public class MenuScreen implements Screen {
     public void render(float delta) {
         ScreenUtils.clear(0.1f, 0.4f, 0.1f, 1);
 
+
         float mouse_x = Gdx.input.getX();
         float mouse_Y = Gdx.graphics.getHeight() - Gdx.input.getY();
 

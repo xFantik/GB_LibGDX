@@ -3,23 +3,30 @@ package ru.pb.gblibgdx.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
-import org.w3c.dom.ls.LSOutput;
 import ru.pb.gblibgdx.*;
 import ru.pb.gblibgdx.Character;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class GameScreen implements Screen {
     private Main main;
@@ -27,7 +34,8 @@ public class GameScreen implements Screen {
     private SpriteBatch batch;
 
     private Character dino;
-    //private Rectangle main_rectangle;
+    private Rectangle main_rectangle;
+    private int mapWidth;
 
     private float dinoRegionWidth, dinoRegionHeight;
 
@@ -42,43 +50,73 @@ public class GameScreen implements Screen {
     //  private Vector2 mapPosition;
     private Vector2 dinoPosition;
 
+
+    private Texture imgBG;
+    private Texture imgKey;
+    private Texture imgCake;
+
+
     private final int[] bg;
-    private final int[] l1;
+    private final int[] l2;
     private Array<RectangleMapObject> objects;
     private Physics physics;
     private Body hero;
     private Rectangle heroRect;
 
+    private Body car;
+    private Rectangle carRect;
+    private Texture carImg;
+    private TextureRegion carTexture;
+
     private static final int heroSpeed = 100;
     private static final int heroJumpSpeed = 160;
-    private static final int forceInJump = 400000;
+    private static final int forceInJump = 200000;
+
+    private final Music music;
+    private final Map<SoundTag, Sound> sounds = new HashMap<>();
+
+    private enum SoundTag {GAME_OVER, WIN, JUMP, GET_KEY}
+
+
+    private boolean hasHey = false;
+    private boolean isBoxOpen = false;
+    private Rectangle keyRect;
+    private Rectangle boxRect;
+    private final int[] layer_openBox = new int[1];
+    private final int[] layer_key = new int[1];
+
+    private final ArrayList<Rectangle> dangersRect = new ArrayList<>();
+    private boolean heroDead = false;
 
 
     public GameScreen(Main main) {
         this.main = main;
         batch = new SpriteBatch();
         dino = CharactersFactory.getGreenDino(main);
-//        main_rectangle = new Rectangle(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        main_rectangle = new Rectangle(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         dino.setAction(Movable.Actions.IDLE);
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         map = new TmxMapLoader().load("map/map1.tmx");
         mapRenderer = new OrthogonalTiledMapRenderer(map);
-        //  mapPosition = new Vector2();
 
+        imgBG = new Texture("bg.png");
+        imgKey = new Texture("key.png");
+        imgCake = new Texture("cake.png");
         //map.getLayers().get("objects").getObjects().getByType(RectangleMapObject.class);// выбор объектов по типу
-        RectangleMapObject t = (RectangleMapObject) map.getLayers().get("camera").getObjects().get("camera");
-        //  t.getRectangle().getPosition(mapPosition);
-
-        camera.position.x = t.getRectangle().x;
+        RectangleMapObject t = (RectangleMapObject) map.getLayers().get("items").getObjects().get("camera");
+        camera.position.x = t.getRectangle().x * Physics.PPM;
         camera.position.y = t.getRectangle().y;
 
         dinoPosition = new Vector2();
 
-        bg = new int[1];
+        bg = new int[2];
         bg[0] = map.getLayers().getIndex("bg");
-        l1 = new int[2];
-        l1[0] = map.getLayers().getIndex("l1");
-        l1[1] = map.getLayers().getIndex("l2");
+        bg[1] = map.getLayers().getIndex("l1");
+        l2 = new int[1];
+        l2[0] = map.getLayers().getIndex("l2");
+
+        layer_openBox[0] = map.getLayers().getIndex("open_box");
+        layer_key[0] = map.getLayers().getIndex("key");
 
 
         objects = map.getLayers().get("objects").getObjects().getByType(RectangleMapObject.class);
@@ -90,11 +128,49 @@ public class GameScreen implements Screen {
         }
 
 
-        RectangleMapObject h = (RectangleMapObject) map.getLayers().get("camera").getObjects().get("hero");
-        hero = physics.addObject(h, (RectangleMapObject) map.getLayers().get("camera").getObjects().get("hero_bottom"));
+        Array<RectangleMapObject> dang = map.getLayers().get("dangers").getObjects().getByType(RectangleMapObject.class);
 
+        for (RectangleMapObject rectangleMapObject : dang) {
+            Rectangle r = rectangleMapObject.getRectangle();
+            r.x /= Physics.PPM;
+            r.y /= Physics.PPM;
+            r.width /= Physics.PPM;
+            r.height /= Physics.PPM;
+            dangersRect.add(r);
+        }
+
+        RectangleMapObject h = (RectangleMapObject) map.getLayers().get("items").getObjects().get("hero");
         heroRect = h.getRectangle();
+
+        hero = physics.addObject(h, (RectangleMapObject) map.getLayers().get("items").getObjects().get("hero_bottom"));
         hero.setFixedRotation(true);
+        hero.setGravityScale(13);
+
+
+        car = physics.addObject((RectangleMapObject) map.getLayers().get("items").getObjects().get("car"));
+        carRect = ((RectangleMapObject) map.getLayers().get("items").getObjects().get("car")).getRectangle();
+        carImg = new Texture("car.png");
+        carTexture = new TextureRegion(carImg);
+
+        keyRect = ((RectangleMapObject) map.getLayers().get("items").getObjects().get("key")).getRectangle();
+        boxRect = ((RectangleMapObject) map.getLayers().get("items").getObjects().get("box")).getRectangle();
+
+        MapProperties prop = map.getProperties();
+        mapWidth = prop.get("width", Integer.class);
+        int tilePixelWidth = prop.get("tilewidth", Integer.class);
+        mapWidth *= tilePixelWidth;
+
+
+        music = Gdx.audio.newMusic(Gdx.files.internal("sounds/mario/super-mario-saundtrek.mp3"));
+        music.setLooping(true);
+        music.setVolume(0.2f);
+        music.play();
+
+
+        sounds.put(SoundTag.GAME_OVER, Gdx.audio.newSound(Gdx.files.internal("sounds/mario/super-mario-game-over.mp3")));
+        sounds.put(SoundTag.WIN, Gdx.audio.newSound(Gdx.files.internal("sounds/mario/win.mp3")));
+        sounds.put(SoundTag.GET_KEY, Gdx.audio.newSound(Gdx.files.internal("sounds/mario/get_key.mp3")));
+        sounds.put(SoundTag.JUMP, Gdx.audio.newSound(Gdx.files.internal("sounds/mario/jump.mp3")));
 
     }
 
@@ -106,38 +182,50 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        ScreenUtils.clear(0.4f, 0.5f, 0.5f, 1f);
 
-        ScreenUtils.clear(0, 0.3f, 0, 1);
+        batch.begin();
+        batch.draw(imgBG, camera.position.x - main_rectangle.width / 2, camera.position.y - main_rectangle.height / 2, main_rectangle.width, main_rectangle.height);
 
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && !heroDead) {
             if (isOnGround())
                 hero.setLinearVelocity(heroSpeed, hero.getLinearVelocity().y);
-            else if (hero.getLinearVelocity().x < heroSpeed)
+            else if (hero.getLinearVelocity().x < heroSpeed) {
+                if (hero.getLinearVelocity().x < 0) {
+                    hero.setLinearVelocity(0, hero.getLinearVelocity().y);
+                }
                 hero.applyForceToCenter(forceInJump, 0, true);
-
+            }
             dino.setReverse(false);
             dino.setAction(Movable.Actions.RUN);
 
 
-        } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+        } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && !heroDead) {
             if (isOnGround())
                 hero.setLinearVelocity(-heroSpeed, hero.getLinearVelocity().y);
-            else if (hero.getLinearVelocity().x > -heroSpeed)
-                hero.applyForceToCenter(-forceInJump, 0, true);
 
+            else if (hero.getLinearVelocity().x > -heroSpeed) {
+                if (hero.getLinearVelocity().x > 0) {
+                    hero.setLinearVelocity(0, hero.getLinearVelocity().y);
+                }
+                hero.applyForceToCenter(-forceInJump, 0, true);
+            }
 
             dino.setReverse(true);
             dino.setAction(Movable.Actions.RUN);
 
-        } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            dino.setAction(Movable.Actions.DEAD);
-        } else {
+        } else if (Gdx.input.isKeyPressed(Input.Keys.M)) {
+            music.stop();
+
+        } else if (!heroDead) {
             dino.setAction(Movable.Actions.IDLE);
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && !heroDead) {
             if (isOnGround()) {
                 dino.jump();
+                sounds.get(SoundTag.JUMP).play(0.5f);
 //                hero.applyForceToCenter(0, 6000, false);
                 hero.setLinearVelocity(hero.getLinearVelocity().x, heroJumpSpeed);
                 // hero.getFixtureList().get(0).setFriction(0);
@@ -145,56 +233,102 @@ public class GameScreen implements Screen {
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
-//            RectangleMapObject h = (RectangleMapObject) map.getLayers().get("camera").getObjects().get("hero");
-//            heroRect = h.getRectangle();
+            dispose();
+            music.stop();
+            main.setScreen(new GameScreen(main));
         }
 
 
         dino.move(Gdx.graphics.getDeltaTime());
-
         dinoRegionWidth = dino.getFrame().getRegionWidth() * dinoFactor;
         dinoRegionHeight = dino.getFrame().getRegionHeight() * dinoFactor;
 
 
-        new Rectangle(dino.getX(), dino.getY(), dinoRegionWidth, dinoRegionHeight).getPosition(dinoPosition);
+        camera.position.x = heroRect.x * Physics.PPM;
+        if (camera.position.x - main_rectangle.width / 2 < main_rectangle.x)
+            camera.position.x = main_rectangle.width / 2;
+        else if (camera.position.x > mapWidth - main_rectangle.width / 2)
+            camera.position.x = mapWidth - main_rectangle.width / 2;
 
-//        if (!main_rectangle.contains(dinoPosition)) {
-//            dino.undo(Gdx.graphics.getDeltaTime());
-//        }
-
-
-        camera.position.x = heroRect.x;
-//        camera.position.y = dinoPosition.y;
 
         camera.update();
-
         batch.setProjectionMatrix(camera.combined);
         mapRenderer.setView(camera);
 
         mapRenderer.render(bg);
-        mapRenderer.render(l1);
+
+//        mapRenderer.render();
 
 
         heroRect.x = hero.getPosition().x - heroRect.width / 2;
         heroRect.y = hero.getPosition().y - heroRect.height / 2;
 
-        batch.begin();
+        if (heroRect.contains(keyRect)) {
+            if (!hasHey)
+                sounds.get(SoundTag.GET_KEY).play(0.5f);
+            hasHey = true;
+        }
+        if (heroRect.overlaps(boxRect) && hasHey) {
+            if (!isBoxOpen) {
+                sounds.get(SoundTag.WIN).play(0.5f);
+                music.stop();
+            }
+            isBoxOpen = true;
+            hasHey = false;
+        }
 
-        batch.draw(dino.getFrame(), heroRect.x, heroRect.y, dinoRegionWidth, dinoRegionHeight);
+
+        for (Rectangle rectangle : dangersRect) {
+            if (rectangle.overlaps(heroRect)) {
+                if (!heroDead)
+                    sounds.get(SoundTag.GAME_OVER).play(0.5f);
+                heroDead = true;
+                dino.setAction(Movable.Actions.DEAD);
+                music.stop();
+            }
+        }
+
+
+        carRect.x = car.getPosition().x - carRect.width / 2;
+        carRect.y = car.getPosition().y - carRect.height / 2;
+
+
+        if (isBoxOpen) {
+            mapRenderer.render(layer_openBox);
+
+        }
+
+
+        batch.draw(dino.getFrame(), heroRect.x * Physics.PPM, heroRect.y * Physics.PPM, dinoRegionWidth * Physics.PPM, dinoRegionHeight * Physics.PPM);
+        if (hasHey) {
+            if (dino.getReverse())
+                batch.draw(imgKey, (heroRect.x + heroRect.width / 3) * Physics.PPM, (heroRect.y + heroRect.height / 3) * Physics.PPM);
+            else
+                batch.draw(imgKey, (heroRect.x + heroRect.width / 3 + imgKey.getWidth()) * Physics.PPM, (heroRect.y + heroRect.height / 3) * Physics.PPM, -imgKey.getWidth(), imgKey.getHeight());
+        } else if (isBoxOpen) {
+            if (dino.getReverse())
+                batch.draw(imgCake, (heroRect.x- heroRect.width/2 +2) * Physics.PPM, (heroRect.y+5) * Physics.PPM, imgCake.getWidth()/1.5f, imgCake.getHeight()/1.5f);
+            else
+                batch.draw(imgCake, (heroRect.x + heroRect.width -6) * Physics.PPM, (heroRect.y+5) * Physics.PPM, imgCake.getWidth()/1.5f, imgCake.getHeight()/1.5f);
+        }
+        batch.draw(carTexture, carRect.x * Physics.PPM, carRect.y * Physics.PPM, carRect.width / 2, carRect.height / 2, carRect.width, carRect.height, 1, 1, car.getAngle() * 55);
         batch.end();
 
-        isOnGround();
+
+        mapRenderer.render(l2);
+        if (!hasHey)
+            mapRenderer.render(layer_key);
 
         physics.step();
-        physics.debugDraw(camera);
+//        physics.debugDraw(camera);
 
 //        ShapeRenderer sr = new ShapeRenderer();
 //        sr.setProjectionMatrix(camera.combined);
 //        sr.setColor(Color.BLUE);
 //        sr.begin(ShapeRenderer.ShapeType.Line);
 //
-//        for (RectangleMapObject object : objects) {
-//            Rectangle r = object.getRectangle();
+//        for (Rectangle object : dangersRect) {
+//            Rectangle r = object;//.getRectangle();
 //            sr.rect(r.x, r.y, r.getWidth(), r.getHeight());
 //
 //        }
@@ -204,13 +338,14 @@ public class GameScreen implements Screen {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             dispose();
             main.setScreen(new MenuScreen(main));
-
+            music.stop();
         }
     }
 
     private boolean isOnGround() {
+//        System.out.println(hero.getLinearVelocity().y);
         if (Math.abs(hero.getLinearVelocity().y) < 0.005f) {
-//            System.out.println("on ground");
+//            System.out.println("on ground")
             return true;
         }
         return false;
@@ -240,5 +375,9 @@ public class GameScreen implements Screen {
     @Override
     public void dispose() {
         batch.dispose();
+        carImg.dispose();
+        imgBG.dispose();
+        imgKey.dispose();
+        imgCake.dispose();
     }
 }
