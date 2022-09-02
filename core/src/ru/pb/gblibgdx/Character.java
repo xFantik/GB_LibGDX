@@ -36,25 +36,25 @@ public class Character implements Movable {
     @Override
     public void move(float deltaTime) {
         anim.addDeltaTime(deltaTime);
-        switch (currentAction) {
-            case RUN:
-                if (!reverse)
-                    intX += speed * deltaTime;
-                else
-                    intX -= speed * deltaTime;
-                break;
-        }
+//        switch (currentAction) {
+//            case RUN:
+//                if (!reverse)
+//                    intX += speed * deltaTime;
+//                else
+//                    intX -= speed * deltaTime;
+//                break;
+//        }
     }
-    public void undo(float deltaTime){
-        switch (currentAction) {
-            case RUN:
-                if (!reverse)
-                    intX -= speed * deltaTime;
-                else
-                    intX += speed * deltaTime;
-                break;
-        }
-    }
+//    public void undo(float deltaTime){
+//        switch (currentAction) {
+//            case RUN:
+//                if (!reverse)
+//                    intX -= speed * deltaTime;
+//                else
+//                    intX += speed * deltaTime;
+//                break;
+//        }
+//    }
 
     public void jump(){
         anim.jump();
@@ -97,4 +97,7 @@ public class Character implements Movable {
         intY = y;
     }
 
+    public Actions getCurrentAction() {
+        return currentAction;
+    }
 }
