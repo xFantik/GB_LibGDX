@@ -12,6 +12,8 @@ public class DesktopLauncher {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setForegroundFPS(60);
 	//	config.setMaximized(true);
+		config.setWindowedMode(1024, 768);
+		config.setResizable(false);
 		config.setTitle("DINO Game");
 		new Lwjgl3Application(new Main(), config);
 	}

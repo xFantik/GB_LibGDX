@@ -13,13 +13,15 @@ public class Physics {
     private static final BodyDef.BodyType DEFAULT_BODY_TYPE = BodyDef.BodyType.StaticBody;
     private static final float DEFAULT_GRAVITY_SCALE = 12;
     public static final float DEFAULT_FRICTION = 5;
-    public static final float PPM = 1;
+    public static final float PPM = 10;
+    public MyContactListener contactListener;
 
 
-    public Physics() {
+    public Physics(MyContactListener myContactListener) {
         world = new World(new Vector2(0, -9.81f), true);  //определяет гравитацию
         debugRenderer = new Box2DDebugRenderer();
-        world.setContactListener(new MyContactListener());
+        contactListener = myContactListener;
+        world.setContactListener(contactListener);
 
     }
 
@@ -35,6 +37,33 @@ public class Physics {
         debugRenderer.render(world, cam.combined);
     }
 
+
+
+
+    public void addSensor(RectangleMapObject object) {
+        addSensor(object, object.getName());
+
+    }
+    public void addSensor(RectangleMapObject object, String data) {
+        BodyDef def = new BodyDef();
+        FixtureDef fDef = new FixtureDef();
+        PolygonShape polygonShape = new PolygonShape();
+
+
+        Rectangle rect = object.getRectangle();
+        def.position.set(rect.x / Physics.PPM + rect.width / 2 / PPM, rect.y / Physics.PPM + rect.height / 2 / PPM);
+
+        polygonShape.setAsBox(rect.width / 2 / PPM, rect.height / 2 / PPM);
+        fDef.shape = polygonShape;
+        fDef.isSensor = true;
+
+
+        Body body = world.createBody(def);
+        body.createFixture(fDef).setUserData(data); //любой класс, можно передать сложный объект
+
+        polygonShape.dispose();
+
+    }
 
     public Body addObject(RectangleMapObject object, RectangleMapObject object2) {
         FixtureDef fDef = new FixtureDef();
@@ -57,12 +86,12 @@ public class Physics {
 
 
         polygonShape = new PolygonShape();
-        polygonShape.setAsBox(object.getRectangle().width / 2.2f / PPM, object.getRectangle().height / 4 / PPM, new Vector2(0, -object.getRectangle().getWidth() / 2), 0);
+        polygonShape.setAsBox(object.getRectangle().width / 2.2f / PPM, object.getRectangle().height / 4 / PPM, new Vector2(0, -object.getRectangle().getWidth() / 2 / PPM), 0);
         fDef = new FixtureDef();
         fDef.shape = polygonShape;
-        fDef.isSensor =true;
-        body.createFixture(fDef).setUserData("foot");
+        fDef.isSensor = true;
 
+        body.createFixture(fDef).setUserData("foot");
 
         polygonShape.dispose();
 
@@ -120,7 +149,6 @@ public class Physics {
         Body body = world.createBody(def);
 
         body.createFixture(fDef).setUserData(object.getName()); //любой класс, можно передать сложный объект
-
 
         polygonShape.dispose();
         return body;
