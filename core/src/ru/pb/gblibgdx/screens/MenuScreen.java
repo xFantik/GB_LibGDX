@@ -68,6 +68,7 @@ public class MenuScreen implements Screen {
             if (rect_btn_1.contains(mouse_x, mouse_Y)) {
                 dispose();
                 main.setScreen(new GameScreen(main));
+                return;
             }
             if (rect_btn_3.contains(mouse_x, mouse_Y)) {
                 dispose();

@@ -30,15 +30,13 @@ public class Character implements Movable {
         currentAction = action;
     }
 
+
     @Override
     public void move(float deltaTime) {
         anim.addDeltaTime(deltaTime);
     }
 
 
-    public void jump(){
-        anim.jump();
-    }
 
     public void setReverse(boolean reverse) {
         this.reverse = reverse;

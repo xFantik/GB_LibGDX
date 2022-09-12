@@ -7,7 +7,6 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
@@ -24,7 +23,6 @@ import ru.pb.gblibgdx.*;
 import ru.pb.gblibgdx.Character;
 import ru.pb.gblibgdx.anim.Images;
 
-import javax.security.auth.kerberos.KerberosTicket;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -178,82 +176,8 @@ public class GameScreen implements Screen {
         batch.begin();
         batch.draw(imgBG, camera.position.x - main_rectangle.width / 2, camera.position.y - main_rectangle.height / 2, main_rectangle.width, main_rectangle.height);
 
+        updateCamera();
 
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && logicProcessor.isAlive()) {
-            if (physics.contactListener.isOnGround())
-                hero.setLinearVelocity(heroSpeed, hero.getLinearVelocity().y);
-            else if (hero.getLinearVelocity().x < heroSpeed) {
-                if (hero.getLinearVelocity().x < 0) {
-                    hero.setLinearVelocity(0, hero.getLinearVelocity().y);
-                }
-                hero.applyForceToCenter(forceInJump, 0, true);
-            }
-            if (dino.getReverse()) {
-                //Сдвигаем сенсор (лечение от застреваний)
-                ((PolygonShape) hero.getFixtureList().get(2).getShape()).setAsBox((heroRect.width / 2 - 0.5f)/Physics.PPM, 5/Physics.PPM, new Vector2(-1f/Physics.PPM, -heroRect.height / 2/Physics.PPM), 0);
-                // polygonShape.setAsBox(object.getRectangle().width / 2.2f / PPM, object.getRectangle().height / 4 / PPM, new Vector2(0, -object.getRectangle().getWidth() / 2 / PPM), 0);
-
-                dino.setReverse(false);
-            }
-            dino.setAction(Movable.Actions.RUN);
-
-            if (hero.getLinearVelocity().x > heroSpeed) hero.getLinearVelocity().x = heroSpeed;
-
-        } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && logicProcessor.isAlive()) {
-            if (physics.contactListener.isOnGround())
-                hero.setLinearVelocity(-heroSpeed, hero.getLinearVelocity().y);
-            else if (hero.getLinearVelocity().x > -heroSpeed) {
-                if (hero.getLinearVelocity().x > 0) {
-                    hero.setLinearVelocity(0, hero.getLinearVelocity().y);
-                }
-                hero.applyForceToCenter(-forceInJump, 0, true);
-            }
-            BitmapFont b;
-
-            if (!dino.getReverse()) {
-                ((PolygonShape) hero.getFixtureList().get(2).getShape()).setAsBox((heroRect.width / 2 - 0.5f)/Physics.PPM, 5/Physics.PPM, new Vector2(1f/Physics.PPM, -heroRect.height / 2/Physics.PPM), 0);
-                dino.setReverse(true);
-            }
-            dino.setAction(Movable.Actions.RUN);
-            if (hero.getLinearVelocity().x < -heroSpeed) hero.getLinearVelocity().x = -heroSpeed;
-
-        } else if (Gdx.input.isKeyPressed(Input.Keys.M)) {
-            music.stop();
-
-        } else if (logicProcessor.isAlive()) {
-            dino.setAction(Movable.Actions.IDLE);
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && logicProcessor.isAlive()) {
-            if (physics.contactListener.isOnGround()) {
-                dino.jump();
-                sounds.get(SoundTag.JUMP).play(0.5f);
-                hero.applyForceToCenter(0, heroJumpForce, true);
-//                hero.setLinearVelocity(hero.getLinearVelocity().x, heroJumpSpeed);
-
-            }
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
-            dispose();
-            music.stop();
-            main.setScreen(new GameScreen(main));
-            return;
-        }
-
-
-        dino.move(Gdx.graphics.getDeltaTime());
-
-
-        camera.position.x = heroRect.x * Physics.PPM;
-        if (camera.position.x - main_rectangle.width / 2 < main_rectangle.x)
-            camera.position.x = main_rectangle.width / 2;
-        else if (camera.position.x > mapWidth - main_rectangle.width / 2)
-            camera.position.x = mapWidth - main_rectangle.width / 2;
-
-
-        camera.update();
-        batch.setProjectionMatrix(camera.combined);
         mapRenderer.setView(camera);
 
         mapRenderer.render(bg);
@@ -261,15 +185,49 @@ public class GameScreen implements Screen {
 //        mapRenderer.render();
 
 
+
+
+        handleLogic();
+
+        batch.draw(dino.getFrame(), heroRect.x * Physics.PPM, heroRect.y * Physics.PPM, dinoRegionWidth, dinoRegionHeight);
+        batch.end();
+
+
+        mapRenderer.render(l2);
+
+
+        physics.step();
+        physics.debugDraw(camera);
+
+
+        handleControls();
+
+    }
+
+    private void updateCamera() {
+        camera.position.x = heroRect.x * Physics.PPM;
+        if (camera.position.x - main_rectangle.width / 2 < main_rectangle.x)
+            camera.position.x = main_rectangle.width / 2;
+        else if (camera.position.x > mapWidth - main_rectangle.width / 2)
+            camera.position.x = mapWidth - main_rectangle.width / 2;
+
+        camera.update();
+
+        batch.setProjectionMatrix(camera.combined);
+    }
+
+    private void handleLogic() {
+        dino.move(Gdx.graphics.getDeltaTime());
+
         heroRect.x = hero.getPosition().x - heroRect.width / 2 / Physics.PPM;
         heroRect.y = hero.getPosition().y - heroRect.height / 2 / Physics.PPM;
+
 
         if (logicProcessor.soundToPlay != null) {
             sounds.get(logicProcessor.soundToPlay).play(0.5f);
             logicProcessor.soundToPlay = null;
 
         }
-
 
         if (!logicProcessor.isAlive()) {
             dinoRegionHeight = heroRect.height;
@@ -284,8 +242,6 @@ public class GameScreen implements Screen {
         }
 
 
-        batch.draw(dino.getFrame(), heroRect.x * Physics.PPM, heroRect.y * Physics.PPM, dinoRegionWidth, dinoRegionHeight);
-
         Iterator<LogicProcessor.Item> iterator = logicProcessor.iterator();
         while (iterator.hasNext()) {
             LogicProcessor.Item item = iterator.next();
@@ -299,21 +255,80 @@ public class GameScreen implements Screen {
             batch.draw(images.getKey(Gdx.graphics.getDeltaTime()), camera.position.x - camera.viewportWidth / 2 + 10, 300, 16, 16);
 
         }
+    }
 
-        batch.end();
+    private void handleControls() {
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && logicProcessor.isAlive()) {
+            if (physics.contactListener.isOnGround()) {
+                hero.setLinearVelocity(heroSpeed, hero.getLinearVelocity().y);
+//                hero.applyForceToCenter(9000, 0, true);
+
+            } else if (hero.getLinearVelocity().x < heroSpeed) {
+                if (hero.getLinearVelocity().x < 0) {
+                    hero.setLinearVelocity(0, hero.getLinearVelocity().y);
+                }
+                hero.applyForceToCenter(forceInJump, 0, true);
+            }
+            if (dino.getReverse()) {
+                //Сдвигаем сенсор (лечение от застреваний)
+                ((PolygonShape) hero.getFixtureList().get(2).getShape()).setAsBox((heroRect.width / 2 - 0.5f) / Physics.PPM, 5 / Physics.PPM, new Vector2(-1f / Physics.PPM, -heroRect.height / 2 / Physics.PPM), 0);
+                dino.setReverse(false);
+            }
+            dino.setAction(Movable.Actions.RUN);
+
+            if (hero.getLinearVelocity().x > heroSpeed) hero.getLinearVelocity().x = heroSpeed;
+
+        } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && logicProcessor.isAlive()) {
+            if (physics.contactListener.isOnGround()) {
+                hero.setLinearVelocity(-heroSpeed, hero.getLinearVelocity().y);
+//                hero.applyForceToCenter(-9000, 0, true);
+            } else if (hero.getLinearVelocity().x > -heroSpeed) {
+                if (hero.getLinearVelocity().x > 0) {
+                    hero.setLinearVelocity(0, hero.getLinearVelocity().y);
+                }
+                hero.applyForceToCenter(-forceInJump, 0, true);
+            }
+
+            if (!dino.getReverse()) {
+                ((PolygonShape) hero.getFixtureList().get(2).getShape()).setAsBox((heroRect.width / 2 - 0.5f) / Physics.PPM, 5 / Physics.PPM, new Vector2(1f / Physics.PPM, -heroRect.height / 2 / Physics.PPM), 0);
+                dino.setReverse(true);
+            }
+            dino.setAction(Movable.Actions.RUN);
+            if (hero.getLinearVelocity().x < -heroSpeed) hero.getLinearVelocity().x = -heroSpeed;
+
+        } else if (Gdx.input.isKeyPressed(Input.Keys.M)) {
+            music.stop();
+
+        } else if (logicProcessor.isAlive()) {
+            if (physics.contactListener.isOnGround())
+                dino.setAction(Movable.Actions.IDLE);
+            else
+                dino.setAction(Movable.Actions.JUMP);
+        }
 
 
-        mapRenderer.render(l2);
+        if (physics.contactListener.isOnGround()) {
+            if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && logicProcessor.isAlive()) {
+                // dino.jump();
+                sounds.get(SoundTag.JUMP).play(0.5f);
+                hero.applyForceToCenter(0, heroJumpForce, true);
+//                hero.setLinearVelocity(hero.getLinearVelocity().x, heroJumpSpeed);
+            }
+        }
 
-
-        physics.step();
-        physics.debugDraw(camera);
+        if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
+            dispose();
+            music.stop();
+            main.setScreen(new GameScreen(main));
+            return;
+        }
 
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             dispose();
             main.setScreen(new MenuScreen(main));
             music.stop();
+            return;
         }
     }
 
@@ -343,10 +358,10 @@ public class GameScreen implements Screen {
     public void dispose() {
         batch.dispose();
         imgBG.dispose();
-        imgBG.dispose();
-//        imgKey.dispose();
-        //imgCake.dispose();
         physics.dispose();
-//        dino.dispose();
+        music.dispose();
+        for (Sound sound : sounds.values()) {
+            sound.dispose();
+        }
     }
 }
