@@ -7,6 +7,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
@@ -16,11 +17,14 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import ru.pb.gblibgdx.*;
 import ru.pb.gblibgdx.Character;
+import ru.pb.gblibgdx.anim.Images;
 
+import javax.security.auth.kerberos.KerberosTicket;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -36,8 +40,8 @@ public class GameScreen implements Screen {
 
     private float dinoRegionWidth, dinoRegionHeight;
 
-//    private final float dinoFactor = 0.2f;
-    private float dinoPerimetr;
+
+    private float dinoPerimeter;
 
     private final OrthographicCamera camera;
 
@@ -45,7 +49,7 @@ public class GameScreen implements Screen {
 
 
     private final Texture imgBG;
-    private final Texture imgKey;
+//    private final Texture imgKey;
 
 
     private final int[] bg;
@@ -58,12 +62,12 @@ public class GameScreen implements Screen {
     private final Rectangle heroRect;
 
 
-    private static final int heroSpeed = 30;
-    private static final float heroSpeedFactor = 0.7f;
+    private static final int heroSpeed = 27; //27
+    // private static final float heroSpeedFactor = 1f;
 
     //    private static final int heroSpeedJump = 80;
-    private static final int heroJumpSpeed = 40;
-    private static final int forceInJump = 2000;
+    private static final int heroJumpForce = 20000;
+    private static final int forceInJump = 600;
 
     private final Music music;
     private final Map<SoundTag, Sound> sounds = new HashMap<>();
@@ -71,12 +75,9 @@ public class GameScreen implements Screen {
     public enum SoundTag {GAME_OVER, WIN, JUMP, GET_KEY}
 
 
-    private final int[] layer_openBox = new int[1];
-    private final int[] layer_key = new int[1];
+//    private final int[] layer_key = new int[1];
 
-
-
-    // public static boolean heroOnGround = true;
+    private final Images images;
 
 
     public GameScreen(Main main) {
@@ -94,15 +95,12 @@ public class GameScreen implements Screen {
         mapRenderer = new OrthogonalTiledMapRenderer(map);
 
         imgBG = new Texture("bg.png");
-        imgKey = new Texture("key.png");
+//        imgKey = new Texture("key.png");
 //        imgCake = new Texture("cake.png");
         //map.getLayers().get("objects").getObjects().getByType(RectangleMapObject.class);// выбор объектов по типу
         RectangleMapObject t = (RectangleMapObject) map.getLayers().get("settings").getObjects().get("camera");
         camera.position.x = t.getRectangle().x * Physics.PPM;
         camera.position.y = t.getRectangle().y;
-
-        //dinoPosition = new Vector2();
-        //dinoPosition = new Vector2();
 
         bg = new int[2];
         bg[0] = map.getLayers().getIndex("bg");
@@ -110,9 +108,8 @@ public class GameScreen implements Screen {
         l2 = new int[1];
         l2[0] = map.getLayers().getIndex("l2");
 
-        layer_openBox[0] = map.getLayers().getIndex("open_box");
-        layer_key[0] = map.getLayers().getIndex("key");
 
+//        layer_key[0] = map.getLayers().getIndex("key");
 
 
         Array<RectangleMapObject> objects = map.getLayers().get("objects").getObjects().getByType(RectangleMapObject.class);
@@ -137,16 +134,15 @@ public class GameScreen implements Screen {
         heroRect = h.getRectangle();
 
         dinoRegionWidth = heroRect.width;
-        dinoRegionHeight = dino.getFrame().getRegionHeight()* heroRect.width/dino.getFrame().getRegionWidth();
-        dinoPerimetr = dinoRegionHeight+dinoRegionWidth;
-
+        dinoRegionHeight = dino.getFrame().getRegionHeight() * heroRect.width / dino.getFrame().getRegionWidth();
+        dinoPerimeter = dinoRegionHeight + dinoRegionWidth;
 
 
         hero = physics.addObject(h, (RectangleMapObject) map.getLayers().get("settings").getObjects().get("hero_bottom"));
         hero.setFixedRotation(true);
         hero.setGravityScale(13);
 
-
+        images = new Images();
 
 
         MapProperties prop = map.getProperties();
@@ -165,8 +161,6 @@ public class GameScreen implements Screen {
         sounds.put(SoundTag.WIN, Gdx.audio.newSound(Gdx.files.internal("sounds/mario/win.mp3")));
         sounds.put(SoundTag.GET_KEY, Gdx.audio.newSound(Gdx.files.internal("sounds/mario/get_key.mp3")));
         sounds.put(SoundTag.JUMP, Gdx.audio.newSound(Gdx.files.internal("sounds/mario/jump.mp3")));
-
-
 
 
     }
@@ -188,29 +182,40 @@ public class GameScreen implements Screen {
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && logicProcessor.isAlive()) {
             if (physics.contactListener.isOnGround())
                 hero.setLinearVelocity(heroSpeed, hero.getLinearVelocity().y);
-            else if (hero.getLinearVelocity().x < heroSpeed * heroSpeedFactor) {
+            else if (hero.getLinearVelocity().x < heroSpeed) {
                 if (hero.getLinearVelocity().x < 0) {
                     hero.setLinearVelocity(0, hero.getLinearVelocity().y);
                 }
                 hero.applyForceToCenter(forceInJump, 0, true);
             }
-            dino.setReverse(false);
+            if (dino.getReverse()) {
+                //Сдвигаем сенсор (лечение от застреваний)
+                ((PolygonShape) hero.getFixtureList().get(2).getShape()).setAsBox((heroRect.width / 2 - 0.5f)/Physics.PPM, 5/Physics.PPM, new Vector2(-1f/Physics.PPM, -heroRect.height / 2/Physics.PPM), 0);
+                // polygonShape.setAsBox(object.getRectangle().width / 2.2f / PPM, object.getRectangle().height / 4 / PPM, new Vector2(0, -object.getRectangle().getWidth() / 2 / PPM), 0);
+
+                dino.setReverse(false);
+            }
             dino.setAction(Movable.Actions.RUN);
 
+            if (hero.getLinearVelocity().x > heroSpeed) hero.getLinearVelocity().x = heroSpeed;
 
         } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && logicProcessor.isAlive()) {
             if (physics.contactListener.isOnGround())
                 hero.setLinearVelocity(-heroSpeed, hero.getLinearVelocity().y);
-
-            else if (hero.getLinearVelocity().x > -heroSpeed * heroSpeedFactor) {
+            else if (hero.getLinearVelocity().x > -heroSpeed) {
                 if (hero.getLinearVelocity().x > 0) {
                     hero.setLinearVelocity(0, hero.getLinearVelocity().y);
                 }
                 hero.applyForceToCenter(-forceInJump, 0, true);
             }
+            BitmapFont b;
 
-            dino.setReverse(true);
+            if (!dino.getReverse()) {
+                ((PolygonShape) hero.getFixtureList().get(2).getShape()).setAsBox((heroRect.width / 2 - 0.5f)/Physics.PPM, 5/Physics.PPM, new Vector2(1f/Physics.PPM, -heroRect.height / 2/Physics.PPM), 0);
+                dino.setReverse(true);
+            }
             dino.setAction(Movable.Actions.RUN);
+            if (hero.getLinearVelocity().x < -heroSpeed) hero.getLinearVelocity().x = -heroSpeed;
 
         } else if (Gdx.input.isKeyPressed(Input.Keys.M)) {
             music.stop();
@@ -223,7 +228,8 @@ public class GameScreen implements Screen {
             if (physics.contactListener.isOnGround()) {
                 dino.jump();
                 sounds.get(SoundTag.JUMP).play(0.5f);
-                hero.setLinearVelocity(hero.getLinearVelocity().x * heroSpeedFactor, heroJumpSpeed);
+                hero.applyForceToCenter(0, heroJumpForce, true);
+//                hero.setLinearVelocity(hero.getLinearVelocity().x, heroJumpSpeed);
 
             }
         }
@@ -267,32 +273,38 @@ public class GameScreen implements Screen {
 
         if (!logicProcessor.isAlive()) {
             dinoRegionHeight = heroRect.height;
-            dinoRegionWidth =   dinoPerimetr - dinoRegionHeight;
+            dinoRegionWidth = dinoPerimeter - dinoRegionHeight;
             dino.setAction(Movable.Actions.DEAD);
             music.stop();
         }
 
 
         if (logicProcessor.isBoxOpen) {
-            mapRenderer.render(layer_openBox);
             music.stop();
         }
 
 
         batch.draw(dino.getFrame(), heroRect.x * Physics.PPM, heroRect.y * Physics.PPM, dinoRegionWidth, dinoRegionHeight);
-//        if (logicProcessor.hasKey()) {
-//            if (dino.getReverse())
-//                batch.draw(imgKey, (heroRect.x + heroRect.width / 3) * Physics.PPM, (heroRect.y + heroRect.height / 3) * Physics.PPM);
-//            else
-//                batch.draw(imgKey, (heroRect.x + heroRect.width / 3 + imgKey.getWidth()) * Physics.PPM, (heroRect.y + heroRect.height / 3) * Physics.PPM, -imgKey.getWidth(), imgKey.getHeight());
-//        }
+
+        Iterator<LogicProcessor.Item> iterator = logicProcessor.iterator();
+        while (iterator.hasNext()) {
+            LogicProcessor.Item item = iterator.next();
+            if (item.type == LogicProcessor.Objects.BOX) {
+                batch.draw(images.getBox(item.isUsed), item.rect.x, item.rect.y, item.rect.width, item.rect.height);
+            } else if (item.type == LogicProcessor.Objects.KEY && !item.isUsed) {
+                batch.draw(images.getKey(Gdx.graphics.getDeltaTime()), item.rect.x, item.rect.y, item.rect.width, item.rect.height);
+            }
+        }
+        if (logicProcessor.hasKey()) {
+            batch.draw(images.getKey(Gdx.graphics.getDeltaTime()), camera.position.x - camera.viewportWidth / 2 + 10, 300, 16, 16);
+
+        }
 
         batch.end();
 
 
         mapRenderer.render(l2);
-        if (!logicProcessor.hasKey())
-            mapRenderer.render(layer_key);
+
 
         physics.step();
         physics.debugDraw(camera);
@@ -332,7 +344,7 @@ public class GameScreen implements Screen {
         batch.dispose();
         imgBG.dispose();
         imgBG.dispose();
-        imgKey.dispose();
+//        imgKey.dispose();
         //imgCake.dispose();
         physics.dispose();
 //        dino.dispose();

@@ -30,7 +30,7 @@ public class AnimTexture extends Anim {
     public void initializeAction(Movable.Actions action, int start, int end, Animation.PlayMode playMode, float frameDuration) {
         TextureRegion region0 = new TextureRegion(img);
         TextureRegion[][] regions = region0.split(regionWidth, regionHeight);
-        TextureRegion[] regions1 = new TextureRegion[regions.length * regions[1].length];
+        TextureRegion[] regions1 = new TextureRegion[regions.length * regions[0].length];
         int c = 0;
         if (horizontalSprite)
             for (int i = 0; i < regions.length; i++) {

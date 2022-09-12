@@ -38,12 +38,11 @@ public class Physics {
     }
 
 
-
-
     public void addSensor(RectangleMapObject object) {
         addSensor(object, object.getName());
 
     }
+
     public void addSensor(RectangleMapObject object, String data) {
         BodyDef def = new BodyDef();
         FixtureDef fDef = new FixtureDef();
