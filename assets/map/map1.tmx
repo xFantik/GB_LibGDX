@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.9" tiledversion="1.9.1" orientation="orthogonal" renderorder="right-down" width="78" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="12" nextobjectid="65">
+<map version="1.9" tiledversion="1.9.1" orientation="orthogonal" renderorder="right-down" width="78" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="14" nextobjectid="69">
  <tileset firstgid="1" source="tiles.tsx"/>
  <layer id="3" name="bg" width="78" height="20">
   <data encoding="base64" compression="zlib">
-   eJztmElOwzAUhp26ogPsmHbAgmHPIErLggXTBRj2DGJSuqEcgWHLuOxdgGN0gYCD8FvJU19dp3VoShvaX/pU+9Wx4z/PjpWkEB9SiLUkSABVXgY5sALyfjzB4ifgFJyBc3BhaNsMqdWDxmyEfo1eFyE05NRSBCXEL8GVjyqX/LJJAxgzBdIgw8anuH5/BUPbsAoaM8w1v+mDS/eNPCOvmvkW9n6zLfjVLpX9uSts1CjfovItLnIj8I186vtWL90z3Tfyipf/s1rxbQyMa971im+mPa7omOGeKV+28LvtvxtoffaKb0pugE/EJ9p8gW9RjZFXVOeeNVMK7dMgA7Jg0HJ/7Ta57L3Ic0fljPJkGIyAUacaM61NG8+Ucrh+BeRBAazG2Dd+FuP7u4qt478NsMnamLxrVaY87PbcdJ3quqPzBD/Pkq/kEfdNiGh8M+Vht+em69TnGi/zM5ppT4vCtziKvxtM51ja99q1RuMqN+Bc2+j9WRG97ZlSOWDfqATQ9+1vpR5PIgQSJDtyp92lebAQgkWw5F87LT1mwCyYk1780JIjcAzuHY9OSv92yffHCdQnwRT7PRD28+RzfUB/O9JjF+yBfenFeTsbyDfqzwY+ZlS+6Wc98u3V8EwfwVMInsELeEdf19LjBtyCO+nNn7ez4c2p7c8GPqaNKJeCvpno3y55vv0AkoLDnw==
+   eJztmElOwzAUhp26ogPsmCRAwIJhzyA6sGDBdAGGPYOY1G4oR2DYMi57F+AYXSDgIPxW8tRX4zQJSRtF9Jc+NXk4cf3hOFbTQnxIIdbSIAXU8QoogCIoOfUUq5+AU3AGzsGFoa0XUjt365MYwxdUjIMJYLpGPxcBMmC1UgU11C/BlYM6rjnHpvShzwzIghzrn+r69ysb2gaNW58U3ZvpGq97eEX3Rs7IlZe3oGPMh/DlNyZv7VJ3xq7wk3bzLSpvcSSoN5VKBN7IU8/b7+jOdG/kih8nJd32NgJGNXf/xZtpjataZrgz5WULn9vOu4Gez//iTaXi4on4RJsv8C2aNXJF59yZVzJonwU5kAf9PtfXTiWMN3ov8rmj5oxyMgiGwLDVrJmeTT/OVAq4vghKoAxWE+yN78X4+q5q6/jbBthkbUzuwsY0D7sxN//qTaViNZ872k/w/Sx5JUfcmxDReDPNw27MzbDe9LnGj/kezbSmReEtroT1xn3o+1ha9zr1jMaZsN5M+9p278+GSL4zlTDe6i7rRsOFnrfuRv17UgGQoNNDSYK3BbAYgCWw7Fw7I21mwRyYl3b90CdH4BjcWzaUOLzpv13y9XES51Ngmn0eeIzNbawPuN+OtNkFe2Bf2nXezg/kje6ne6M6h/cZlTd9r0feXg1r5iN4CsAzeAHvuNe1tLkBt+BO2uPn7fzwZrXeT/dGdQ7v009oLrn9ZqL/dsnn2w8HCciv
   </data>
  </layer>
  <layer id="1" name="l1" width="78" height="20">
@@ -13,7 +13,7 @@
  </layer>
  <layer id="2" name="l2" width="78" height="20">
   <data encoding="base64" compression="zlib">
-   eJxjYBgFo2AUjILBBTYOtANGwSgYBaOAxmATA4PDQLthFJAPtjMxMOxjGmhX0A/cYULgu0B8j0y/vwDqez+Cwm0UjIJRMAqwgT5G+tiziYC8HBRTG8QB/RdPwI+azKSbux+LmcOpPu4H+m8CgXCLIiPcsIHR+pi2IAEYtomj4UsymAgMs0l0CLfhNt50CBhmhwdBegMA5vgVcQ==
+   eJxjYBgFo2AUjILBBTYOtANGwSgYBaOAxmATA4PDQLthFJAPtjMxMOxjGmhX0A/cYULgu0B8j0y/vwDqez+Cwm0UjIJRMAqwgT5G+tiziYC8HBRTG8QB/RdPwI+azKSbux+LmcOpPu4H+m8CgXCLIiPcsIHR+nhkAAUseBSMjjfRCgAAUOcSnA==
   </data>
  </layer>
  <layer id="7" name="interface" width="78" height="20">
@@ -26,7 +26,7 @@
    eJztzkENAAAIBKB72M3+jYzhnJCABAAAAIDPurYHAFw07SsATA==
   </data>
  </layer>
- <objectgroup id="4" name="items">
+ <objectgroup id="4" name="settings">
   <object id="52" name="camera" x="354.75" y="143">
    <point/>
   </object>
@@ -37,7 +37,7 @@
     <property name="restitution" type="float" value="0"/>
    </properties>
   </object>
-  <object id="54" name="hero_bottom" x="191.578" y="262.285" width="33.1175" height="1.08845">
+  <object id="54" name="hero_bottom" x="191.203" y="262.285" width="33.805" height="1.08845">
    <properties>
     <property name="BodyType" value="DynamicBody"/>
     <property name="friction" type="float" value="5"/>
@@ -51,8 +51,6 @@
     <property name="restitution" type="float" value="0.3"/>
    </properties>
   </object>
-  <object id="56" name="key" x="1087.25" y="226" width="14" height="12.5"/>
-  <object id="57" name="box" x="33.25" y="136" width="26" height="25"/>
  </objectgroup>
  <objectgroup id="11" name="dangers">
   <object id="42" x="102" y="305.667" width="758" height="6.66667"/>
@@ -76,6 +74,10 @@
   <object id="62" x="99.3333" y="139.333" width="74.6667" height="7.33333"/>
   <object id="63" x="196.667" y="174" width="154" height="6"/>
   <object id="64" x="544" y="240" width="79.3333" height="30"/>
+ </objectgroup>
+ <objectgroup id="13" name="items">
+  <object id="67" name="key" x="1089.69" y="224.932" width="14" height="12.5"/>
+  <object id="68" name="box" x="35.6894" y="134.932" width="26" height="25"/>
  </objectgroup>
  <layer id="9" name="open_box" width="78" height="20">
   <data encoding="base64" compression="zlib">

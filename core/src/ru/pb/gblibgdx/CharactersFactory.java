@@ -9,21 +9,6 @@ public class CharactersFactory {
     private static Character dino;
     private static Character greenDino;
 
-//    public static Character getCat(Main main){
-//        if (cat== null)    {
-//            AnimTexture animCat;
-//            animCat = new AnimTexture("anim_cat.png", 1 / 10f, 4,13);
-//            animCat.initializeAction(Movable.Actions.GO, 0, 12, Animation.PlayMode.LOOP, true, false,false);
-//            animCat.initializeAction(Movable.Actions.SIT, 12, 19, Animation.PlayMode.NORMAL, true, false,false);
-//            animCat.initializeAction(Movable.Actions.STAND, 12, 19, Animation.PlayMode.REVERSED, true, false,false);
-//            animCat.initializeAction(Movable.Actions.SIT_LEFT, 12, 19, Animation.PlayMode.NORMAL, false);
-//            animCat.initializeAction(Movable.Actions.STAND_LEFT, 12, 19, Animation.PlayMode.REVERSED, false);
-//            animCat.initializeAction(Movable.Actions.GO_LEFT, 0, 12,  Animation.PlayMode.LOOP,  false);
-//
-//            cat = new Character(main, animCat, 53, 0,2);
-//        }
-//        return cat;
-//    }
 
     public static Character getDino(Main main){
         if (dino== null)    {
@@ -32,9 +17,9 @@ public class CharactersFactory {
             anim.initializeAction(Movable.Actions.IDLE, 0, 15, Animation.PlayMode.LOOP);
             anim.initializeAction(Movable.Actions.RUN, 17, 25, Animation.PlayMode.LOOP);
             anim.initializeAction(Movable.Actions.DEAD, 25, 36, Animation.PlayMode.NORMAL);
-            anim.initializeAction(Movable.Actions.JUMP, 41, 49, Animation.PlayMode.LOOP);
+            anim.initializeAction(Movable.Actions.JUMP, 41, 49, Animation.PlayMode.LOOP );
 
-            dino = new Character(anim, 150, 0,2);
+            dino = new Character(anim, 100);
 
         }
         return dino;
@@ -45,11 +30,10 @@ public class CharactersFactory {
             anim.initializeAction(Movable.Actions.IDLE, "Idle", Animation.PlayMode.LOOP);
             anim.initializeAction(Movable.Actions.RUN, "Run", Animation.PlayMode.LOOP);
             anim.initializeAction(Movable.Actions.DEAD, "Dead", Animation.PlayMode.NORMAL);
-            anim.initializeAction(Movable.Actions.JUMP,"Jump", Animation.PlayMode.NORMAL, 1/10f);
-            greenDino = new Character(anim, 150, 0,47);
+            anim.initializeAction(Movable.Actions.JUMP,"Jump", Animation.PlayMode.NORMAL, 1/15f);
+            greenDino = new Character(anim, 100);
         }
         return greenDino;
     }
-
 
 }

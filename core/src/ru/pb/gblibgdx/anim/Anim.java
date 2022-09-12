@@ -44,8 +44,5 @@ public abstract class Anim {
             this.jumpTime = - animationsMap.get(Movable.Actions.JUMP).getAnimationDuration();
         }
     }
-
     public abstract void dispose();
-
-
 }

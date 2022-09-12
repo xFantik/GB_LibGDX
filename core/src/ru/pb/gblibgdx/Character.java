@@ -8,19 +8,16 @@ public class Character implements Movable {
 
     private Anim anim;
     private float speed;
-    private float intX;
-    private float intY;
 
     private Actions currentAction;
     private boolean reverse = false;
 
 
 
-    public Character(Anim anim, float speed, float intX, float intY) {
+    public Character(Anim anim, float speed) {
         this.anim = anim;
         this.speed = speed;
-        this.intX = intX;
-        this.intY = intY;
+
         setAction(Actions.IDLE);
 
 
@@ -36,25 +33,8 @@ public class Character implements Movable {
     @Override
     public void move(float deltaTime) {
         anim.addDeltaTime(deltaTime);
-//        switch (currentAction) {
-//            case RUN:
-//                if (!reverse)
-//                    intX += speed * deltaTime;
-//                else
-//                    intX -= speed * deltaTime;
-//                break;
-//        }
     }
-//    public void undo(float deltaTime){
-//        switch (currentAction) {
-//            case RUN:
-//                if (!reverse)
-//                    intX -= speed * deltaTime;
-//                else
-//                    intX += speed * deltaTime;
-//                break;
-//        }
-//    }
+
 
     public void jump(){
         anim.jump();
@@ -66,14 +46,6 @@ public class Character implements Movable {
 
     public boolean getReverse() {
         return reverse;
-    }
-
-    public float getX() {
-        return intX;
-    }
-
-    public float getY() {
-        return intY;
     }
 
 
@@ -92,12 +64,6 @@ public class Character implements Movable {
         anim.dispose();
     }
 
-    public void reset(int x, int y) {
-        intX = x;
-        intY = y;
-    }
 
-    public Actions getCurrentAction() {
-        return currentAction;
-    }
+
 }

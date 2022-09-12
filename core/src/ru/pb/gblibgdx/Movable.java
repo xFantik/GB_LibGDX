@@ -7,8 +7,6 @@ public interface Movable {
 
     void move (float deltaTime);
     void setAction(Actions action);
-    float getX();
-    float getY();
     void setReverse(boolean reverse);
 
 }
