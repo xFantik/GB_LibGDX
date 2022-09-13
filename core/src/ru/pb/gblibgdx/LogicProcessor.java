@@ -89,9 +89,9 @@ public class LogicProcessor {
     }
 
     public class Item {
-        boolean isUsed = false;
-        private Objects type;
-        private Rectangle rect;
+        public boolean isUsed = false;
+        public Objects type;
+        public Rectangle rect;
 
         public Item(Objects type, Rectangle rect) {
             this.type = type;

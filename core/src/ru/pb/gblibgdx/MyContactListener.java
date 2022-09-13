@@ -24,7 +24,7 @@ public class MyContactListener implements ContactListener {
 
 
 
-        System.out.println(a.getUserData() + "   " + b.getUserData());
+//        System.out.println(a.getUserData() + "   " + b.getUserData());
 
         if (a.getUserData() != null && a.getUserData().equals("foot")) {
             footContactCount++;
