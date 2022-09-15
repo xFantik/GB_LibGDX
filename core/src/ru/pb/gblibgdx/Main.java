@@ -3,6 +3,7 @@ package ru.pb.gblibgdx;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import ru.pb.gblibgdx.screens.GameScreen;
 import ru.pb.gblibgdx.screens.MenuScreen;
 
 public class Main extends Game {
@@ -12,7 +13,7 @@ public class Main extends Game {
 
     @Override
     public void create() {
-        setScreen(new MenuScreen(this));
+        setScreen(new GameScreen(this));
         mapSizeX =  Gdx.graphics.getWidth();
         mapSizeY =  Gdx.graphics.getHeight();
     }

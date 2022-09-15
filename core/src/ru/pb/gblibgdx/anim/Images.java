@@ -30,7 +30,7 @@ public class Images implements Disposable {
         boxOpen = new Texture("items/box_open.png");
 
 
-        animKey = new AnimTexture("items/key.png", 1 / 3f, 4, 1, true);
+        animKey = new AnimTexture("items/keys.png", 1 / 3f, 4, 1, true);
         animKey.initializeAction(Movable.Actions.IDLE, 0, 4, Animation.PlayMode.LOOP);
 
 

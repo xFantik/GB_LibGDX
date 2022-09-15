@@ -17,15 +17,23 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
+import com.badlogic.gdx.scenes.scene2d.actions.ParallelAction;
+import com.badlogic.gdx.scenes.scene2d.actions.RotateToAction;
+import com.badlogic.gdx.scenes.scene2d.actions.ScaleByAction;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import ru.pb.gblibgdx.*;
 import ru.pb.gblibgdx.Character;
 import ru.pb.gblibgdx.anim.Images;
 
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.addAction;
 
 public class GameScreen implements Screen {
     private final Main main;
@@ -35,8 +43,14 @@ public class GameScreen implements Screen {
     private final Character dino;
     private final Rectangle main_rectangle;
     private int mapWidth;
+    private int mapHeight;
 
     private float dinoRegionWidth, dinoRegionHeight;
+
+
+    Stage stage;
+//    private MyActor myKeyActor;
+    private float keyAnimTime = 1f;
 
 
     private float dinoPerimeter;
@@ -44,12 +58,14 @@ public class GameScreen implements Screen {
     private float dinoAutoFlyTime = 2.0f;
     private float dinoFlyTime = 0f;
 
+
     private final OrthographicCamera camera;
 
     private final OrthogonalTiledMapRenderer mapRenderer;
 
 
     private final Texture imgBG;
+    private final Texture imgKey;
 
     private final int[] bg;
     private final int[] l2;
@@ -80,6 +96,10 @@ public class GameScreen implements Screen {
         physics = new Physics(new MyContactListener(logicProcessor));
 
 
+        stage = new Stage();
+
+
+
         batch = new SpriteBatch();
         dino = CharactersFactory.getGreenDino(main);
         main_rectangle = new Rectangle(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -89,6 +109,8 @@ public class GameScreen implements Screen {
         mapRenderer = new OrthogonalTiledMapRenderer(map);
 
         imgBG = new Texture("bg.png");
+        imgKey = new Texture(Gdx.files.internal("items/key.png"));
+
         RectangleMapObject t = (RectangleMapObject) map.getLayers().get("settings").getObjects().get("camera");
         camera.position.x = t.getRectangle().x * Physics.PPM;
         camera.position.y = t.getRectangle().y;
@@ -98,9 +120,6 @@ public class GameScreen implements Screen {
         bg[1] = map.getLayers().getIndex("l1");
         l2 = new int[1];
         l2[0] = map.getLayers().getIndex("l2");
-
-
-//        layer_key[0] = map.getLayers().getIndex("key");
 
 
         Array<RectangleMapObject> objects = map.getLayers().get("objects").getObjects().getByType(RectangleMapObject.class);
@@ -141,6 +160,10 @@ public class GameScreen implements Screen {
         int tilePixelWidth = prop.get("tilewidth", Integer.class);
         mapWidth *= tilePixelWidth;
 
+        mapHeight = prop.get("height", Integer.class);
+        tilePixelWidth = prop.get("tilewidth", Integer.class);
+        mapHeight *= tilePixelWidth;
+
 
         music = Gdx.audio.newMusic(Gdx.files.internal("sounds/mario/super-mario-saundtrek.mp3"));
         music.setLooping(true);
@@ -164,8 +187,9 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        ScreenUtils.clear(0.4f, 0.5f, 0.5f, 1f);
 
+
+        ScreenUtils.clear(0.4f, 0.5f, 0.5f, 1f);
 
         batch.begin();
         batch.draw(imgBG, camera.position.x - main_rectangle.width / 2, camera.position.y - main_rectangle.height / 2, main_rectangle.width, main_rectangle.height);
@@ -189,6 +213,9 @@ public class GameScreen implements Screen {
 
 
 
+
+            //todo:
+
         }
         batch.end();
 
@@ -197,6 +224,8 @@ public class GameScreen implements Screen {
         physics.step();
 //        physics.debugDraw(camera);
         handleControls();
+        stage.act(Gdx.graphics.getDeltaTime());
+        stage.draw();
 
 
     }
@@ -258,8 +287,52 @@ public class GameScreen implements Screen {
             }
         }
 
-        for (int i = 0; i < logicProcessor.getKeysCount(); i++) {
-            batch.draw(images.getImage(LogicProcessor.Objects.KEY), (camera.position.x - camera.viewportWidth / 2) + 20 * i + 10, 300, 16, 16);
+
+        if (logicProcessor.gettingKeyPosition != null) {
+            final MyActor myKeyActor = new MyActor(imgKey);
+            myKeyActor.setVisible(false);
+            stage.addActor(myKeyActor);
+
+            myKeyActor.setPosition(heroRect.x*Physics.PPM-camera.position.x +camera.viewportWidth/2, heroRect.y * Physics.PPM -camera.position.y+camera.viewportHeight/2);
+
+            myKeyActor.setRotation(0);
+
+            logicProcessor.gettingKeyPosition = null;
+            MoveToAction mta = new MoveToAction();
+
+            mta.setPosition(20 * logicProcessor.getKeysCount(), camera.viewportHeight - myKeyActor.getHeight() - 10);
+            mta.setDuration(keyAnimTime);
+//            ScaleByAction sba = new ScaleByAction();
+//            sba.setAmount(20f / 16f);
+//            sba.setDuration(keyAnimTime);
+
+            RotateToAction rta = new RotateToAction();
+            rta.setRotation(360f);
+            rta.setDuration(keyAnimTime);
+            ParallelAction pa = new ParallelAction(mta, rta);
+            addAction(pa);
+            rta.isComplete();
+            myKeyActor.addAction(pa);
+            myKeyActor.setVisible(true);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep((long) (keyAnimTime * 1000f));
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    stage.getActors().removeIndex(0);
+
+                }
+            }).start();
+        }
+
+
+        for (int i = 0; i < logicProcessor.getKeysCount() - stage.getActors().size; i++) {
+//            batch.draw(images.getImage(LogicProcessor.Objects.KEY), (camera.position.x - camera.viewportWidth / 2) + 20 * i + 10, 300, 16, 16);
+            batch.draw(images.getImage(LogicProcessor.Objects.KEY), (camera.position.x - camera.viewportWidth / 2) + 20 * i + 10, camera.position.y + camera.viewportHeight / 2 - 20, 20, 20);
         }
 
 
@@ -279,7 +352,7 @@ public class GameScreen implements Screen {
             }
             if (dino.getReverse()) {
                 //Сдвигаем сенсор (лечение от застреваний)
-                ((PolygonShape) hero.getFixtureList().get(2).getShape()).setAsBox((heroRect.width / 2 - 0.5f) / Physics.PPM, 5 / Physics.PPM, new Vector2(-1f / Physics.PPM, -heroRect.height / 2 / Physics.PPM), 0);
+                ((PolygonShape) hero.getFixtureList().get(2).getShape()).setAsBox((heroRect.width / 2 - 0.2f) / Physics.PPM, 5 / Physics.PPM, new Vector2(-1f / Physics.PPM, -heroRect.height / 2 / Physics.PPM), 0);
                 dino.setReverse(false);
             }
             dino.setAction(Movable.Actions.RUN);
@@ -366,6 +439,7 @@ public class GameScreen implements Screen {
     public void dispose() {
         batch.dispose();
         imgBG.dispose();
+        imgKey.dispose();
         physics.dispose();
         music.dispose();
         for (Sound sound : sounds.values()) {
