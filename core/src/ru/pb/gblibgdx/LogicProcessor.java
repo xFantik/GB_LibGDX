@@ -10,49 +10,72 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class LogicProcessor {
-    public enum Objects {KEY, DANGER, BOX}
+    public enum Objects {KEY, DANGER, BOX, PORTAL, BOX_OPEN}
 
     private ArrayList<Item> items;
 
     public GameScreen.SoundTag soundToPlay;
 
+    Item portal;
 
 
     private int keysCount = 0;
 
     private int heroHealth = 1;
 
-    public boolean isBoxOpen = false;
+    private int boxCount = 0;
 
-    public  LogicProcessor (){
-       items = new ArrayList<>();
+    public Vector2 flyToPortal;
+
+
+
+    public LogicProcessor() {
+        items = new ArrayList<>();
     }
 
 
     public void addItem(RectangleMapObject rectangleMapObject) {
-        if (rectangleMapObject.getName().equals("box"))
+        if (rectangleMapObject.getName().equals("box")) {
             items.add(new Item(Objects.BOX, rectangleMapObject.getRectangle()));
-        else if (rectangleMapObject.getName().equals("key"))
+            boxCount++;
+        } else if (rectangleMapObject.getName().equals("key"))
             items.add(new Item(Objects.KEY, rectangleMapObject.getRectangle()));
+        else if (rectangleMapObject.getName().equals("portal")) {
+            portal = new Item(Objects.PORTAL, rectangleMapObject.getRectangle());
+            portal.isUsed = true;
+
+            items.add(portal);
+        }
     }
+
     public void contact(Fixture fixture) {
         if (fixture.getUserData().equals("damage")) {
             heroHealth--;
-            if (heroHealth == 0){
+            if (heroHealth == 0) {
                 soundToPlay = GameScreen.SoundTag.GAME_OVER;
             }
             return;
         }
+
         Item item = getItem(fixture.getBody().getPosition());
-        if (item.type == Objects.KEY && !item.isUsed) {
+        if (item.isUsed) return;
+
+        if (item.type == Objects.KEY) {
             keysCount++;
             soundToPlay = GameScreen.SoundTag.GET_KEY;
             item.isUsed = true;
 //            items.remove(item);
-        } else if (item.type == Objects.BOX && !item.isUsed && keysCount > 0) {
+        } else if (item.type == Objects.BOX && keysCount > 0) {
             keysCount--;
             item.isUsed = true;
-            isBoxOpen = true;
+            boxCount--;
+            if (boxCount == 0 && portal != null) {
+                portal.isUsed = false;
+                soundToPlay = GameScreen.SoundTag.WIN;
+            } else
+                soundToPlay = GameScreen.SoundTag.GET_KEY;
+        } else if (item.type == Objects.PORTAL) {
+            flyToPortal = new Vector2(portal.rect.x+portal.rect.width/2, portal.rect.y+portal.rect.height/2);
             soundToPlay = GameScreen.SoundTag.WIN;
         }
 
@@ -63,10 +86,9 @@ public class LogicProcessor {
         return heroHealth > 0;
     }
 
-    public boolean hasKey() {
-        return keysCount > 0;
+    public int getKeysCount() {
+        return keysCount;
     }
-
 
     public Iterator<Item> iterator() {
         return items.iterator();
@@ -88,23 +110,4 @@ public class LogicProcessor {
         return null;
     }
 
-    public class Item {
-        public boolean isUsed = false;
-        public Objects type;
-        public Rectangle rect;
-
-        public Item(Objects type, Rectangle rect) {
-            this.type = type;
-            this.rect = rect;
-        }
-
-        @Override
-        public String toString() {
-            return "Item{" +
-                    "isUsed=" + isUsed +
-                    ", type=" + type +
-                    ", rect=" + rect +
-                    '}';
-        }
-    }
 }

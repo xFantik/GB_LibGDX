@@ -12,6 +12,7 @@ public class Character implements Movable {
     private Actions currentAction;
     private boolean reverse = false;
 
+    private float time=0;
 
 
     public Character(Anim anim, float speed) {
@@ -19,7 +20,6 @@ public class Character implements Movable {
         this.speed = speed;
 
         setAction(Actions.IDLE);
-
 
     }
 
@@ -33,7 +33,9 @@ public class Character implements Movable {
 
     @Override
     public void move(float deltaTime) {
-        anim.addDeltaTime(deltaTime);
+        time+=deltaTime;
+//        anim.addDeltaTime(deltaTime);
+       // anim.setDeltaTime(time);
     }
 
 
@@ -48,14 +50,14 @@ public class Character implements Movable {
 
 
     public TextureRegion getFrame() {
-        if (anim.getFrame().isFlipX() && !reverse)
-            anim.getFrame().flip(true, false);
+        if (anim.getFrame(time).isFlipX() && !reverse)
+            anim.getFrame(time).flip(true, false);
 
-        if (!anim.getFrame().isFlipX() && reverse)
-            anim.getFrame().flip(true, false);
+        if (!anim.getFrame(time).isFlipX() && reverse)
+            anim.getFrame(time).flip(true, false);
 
 
-        return anim.getFrame();
+        return anim.getFrame(time);
     }
 
     public void dispose() {

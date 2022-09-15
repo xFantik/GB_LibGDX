@@ -24,12 +24,8 @@ public abstract class Anim {
     }
 
 
-    public void addDeltaTime(float delta) {
-        animTime += delta;
-    }
-
-    public TextureRegion getFrame() {
-        return anim.getKeyFrame(this.animTime);
+    public TextureRegion getFrame(float animTime) {
+        return anim.getKeyFrame(animTime);
     }
 
     public abstract void dispose();

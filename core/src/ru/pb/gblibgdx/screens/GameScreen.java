@@ -40,6 +40,9 @@ public class GameScreen implements Screen {
 
 
     private float dinoPerimeter;
+    private Vector2 dinoCenter;
+    private float dinoAutoFlyTime = 2.0f;
+    private float dinoFlyTime = 0f;
 
     private final OrthographicCamera camera;
 
@@ -47,8 +50,6 @@ public class GameScreen implements Screen {
 
 
     private final Texture imgBG;
-//    private final Texture imgKey;
-
 
     private final int[] bg;
     private final int[] l2;
@@ -61,9 +62,6 @@ public class GameScreen implements Screen {
 
 
     private static final int heroSpeed = 27; //27
-    // private static final float heroSpeedFactor = 1f;
-
-    //    private static final int heroSpeedJump = 80;
     private static final int heroJumpForce = 20000;
     private static final int forceInJump = 600;
 
@@ -72,8 +70,6 @@ public class GameScreen implements Screen {
 
     public enum SoundTag {GAME_OVER, WIN, JUMP, GET_KEY}
 
-
-//    private final int[] layer_key = new int[1];
 
     private final Images images;
 
@@ -93,9 +89,6 @@ public class GameScreen implements Screen {
         mapRenderer = new OrthogonalTiledMapRenderer(map);
 
         imgBG = new Texture("bg.png");
-//        imgKey = new Texture("key.png");
-//        imgCake = new Texture("cake.png");
-        //map.getLayers().get("objects").getObjects().getByType(RectangleMapObject.class);// выбор объектов по типу
         RectangleMapObject t = (RectangleMapObject) map.getLayers().get("settings").getObjects().get("camera");
         camera.position.x = t.getRectangle().x * Physics.PPM;
         camera.position.y = t.getRectangle().y;
@@ -173,34 +166,38 @@ public class GameScreen implements Screen {
     public void render(float delta) {
         ScreenUtils.clear(0.4f, 0.5f, 0.5f, 1f);
 
+
         batch.begin();
         batch.draw(imgBG, camera.position.x - main_rectangle.width / 2, camera.position.y - main_rectangle.height / 2, main_rectangle.width, main_rectangle.height);
 
         updateCamera();
 
         mapRenderer.setView(camera);
-
         mapRenderer.render(bg);
-
 //        mapRenderer.render();
-
-
 
 
         handleLogic();
 
-        batch.draw(dino.getFrame(), heroRect.x * Physics.PPM, heroRect.y * Physics.PPM, dinoRegionWidth, dinoRegionHeight);
-        batch.end();
+        if (logicProcessor.flyToPortal == null) {
+            batch.draw(dino.getFrame(), heroRect.x * Physics.PPM, heroRect.y * Physics.PPM, dinoRegionWidth, dinoRegionHeight);
+        } else {
+            if (dinoCenter == null) {
+                dinoCenter = new Vector2(heroRect.x + heroRect.width / 2, heroRect.y + heroRect.height);
+            }
+            float x = (logicProcessor.flyToPortal.x - dinoCenter.x) / dinoAutoFlyTime;
 
+
+
+        }
+        batch.end();
 
         mapRenderer.render(l2);
 
-
         physics.step();
-        physics.debugDraw(camera);
-
-
+//        physics.debugDraw(camera);
         handleControls();
+
 
     }
 
@@ -237,24 +234,35 @@ public class GameScreen implements Screen {
         }
 
 
-        if (logicProcessor.isBoxOpen) {
-            music.stop();
-        }
+//        if (logicProcessor.isBoxOpen) {
+//            music.stop();
+//        }
 
 
-        Iterator<LogicProcessor.Item> iterator = logicProcessor.iterator();
+        images.addDeltaTime(Gdx.graphics.getDeltaTime());
+
+        Iterator<Item> iterator = logicProcessor.iterator();
         while (iterator.hasNext()) {
-            LogicProcessor.Item item = iterator.next();
+            Item item = iterator.next();
+//                batch.draw(images.getImage(item, Gdx.graphics.getDeltaTime()), item.rect.x, item.rect.y, item.rect.width, item.rect.height);
+
             if (item.type == LogicProcessor.Objects.BOX) {
-                batch.draw(images.getBox(item.isUsed), item.rect.x, item.rect.y, item.rect.width, item.rect.height);
+//                batch.draw(images.getBox(item.isUsed), item.rect.x, item.rect.y, item.rect.width, item.rect.height);
+                batch.draw(images.getImage(item.isUsed ? LogicProcessor.Objects.BOX_OPEN : LogicProcessor.Objects.BOX), item.rect.x, item.rect.y, item.rect.width, item.rect.height);
             } else if (item.type == LogicProcessor.Objects.KEY && !item.isUsed) {
-                batch.draw(images.getKey(Gdx.graphics.getDeltaTime()), item.rect.x, item.rect.y, item.rect.width, item.rect.height);
+//                batch.draw(images.getKeyFrame(Gdx.graphics.getDeltaTime()), item.rect.x, item.rect.y, item.rect.width, item.rect.height);
+                batch.draw(images.getImage(LogicProcessor.Objects.KEY), item.rect.x, item.rect.y, item.rect.width, item.rect.height);
+            } else if (item.type == LogicProcessor.Objects.PORTAL && !item.isUsed) {
+                batch.draw(images.getImage(LogicProcessor.Objects.PORTAL), item.rect.x, item.rect.y, item.rect.width, item.rect.height);
+
             }
         }
-        if (logicProcessor.hasKey()) {
-            batch.draw(images.getKey(Gdx.graphics.getDeltaTime()), camera.position.x - camera.viewportWidth / 2 + 10, 300, 16, 16);
 
+        for (int i = 0; i < logicProcessor.getKeysCount(); i++) {
+            batch.draw(images.getImage(LogicProcessor.Objects.KEY), (camera.position.x - camera.viewportWidth / 2) + 20 * i + 10, 300, 16, 16);
         }
+
+
     }
 
     private void handleControls() {
@@ -363,5 +371,6 @@ public class GameScreen implements Screen {
         for (Sound sound : sounds.values()) {
             sound.dispose();
         }
+        images.dispose();
     }
 }
