@@ -25,8 +25,10 @@ public class Character implements Movable {
 
     @Override
     public void setAction(Actions action) {
-        if (currentAction != action)
+        if (currentAction != action) {
             anim.setAction(action);
+            time = 0;
+        }
         currentAction = action;
     }
 
@@ -34,8 +36,6 @@ public class Character implements Movable {
     @Override
     public void move(float deltaTime) {
         time+=deltaTime;
-//        anim.addDeltaTime(deltaTime);
-       // anim.setDeltaTime(time);
     }
 
 

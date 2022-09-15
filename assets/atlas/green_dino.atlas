@@ -24,56 +24,56 @@ Jump
   size: 402, 444
   orig: 680, 472
   offset: 33, 0
-  index: 10
+  index: 8
 Jump
   rotate: false
   xy: 0, 780
   size: 413, 401
   orig: 680, 472
   offset: 35, 51
-  index: 4
+  index: 3
 Jump
   rotate: false
   xy: 397, 1195
   size: 405, 408
   orig: 680, 472
   offset: 31, 19
-  index: 10
+  index: 9
 Jump
   rotate: false
   xy: 402, 1646
   size: 412, 401
   orig: 680, 472
   offset: 35, 51
-  index: 8
+  index: 7
 Jump
   rotate: false
   xy: 396, 383
   size: 414, 397
   orig: 680, 472
   offset: 34, 56
-  index: 5
+  index: 4
 Jump
   rotate: false
   xy: 413, 799
   size: 414, 396
   orig: 680, 472
   offset: 33, 57
-  index: 7
+  index: 6
 Jump
   rotate: false
   xy: 810, 406
   size: 414, 393
   orig: 680, 472
   offset: 32, 61
-  index: 6
+  index: 5
 Jump
   rotate: false
   xy: 1215, 838
   size: 401, 377
   orig: 680, 472
   offset: 26, 43
-  index: 11
+  index: 10
 Run
   rotate: false
   xy: 0, 1181
@@ -303,21 +303,14 @@ Jump
   size: 383, 381
   orig: 680, 472
   offset: 67, 13
-  index: 3
-Jump
-  rotate: false
-  xy: 1113, 1249
-  size: 382, 337
-  orig: 680, 472
-  offset: 71, 47
-  index: 1
+  index: 2
 Jump
   rotate: false
   xy: 1495, 1182
   size: 380, 333
   orig: 680, 472
   offset: 73, 47
-  index: 2
+  index: 1
 Walk
   rotate: false
   xy: 0, 1218

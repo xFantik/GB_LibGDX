@@ -1,13 +1,8 @@
 package ru.pb.gblibgdx;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
-import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.scenes.scene2d.actions.*;
 import ru.pb.gblibgdx.screens.GameScreen;
 
 import java.util.ArrayList;
@@ -20,21 +15,21 @@ public class LogicProcessor {
 
     private ArrayList<Item> items;
 
-    public GameScreen.SoundTag soundToPlay;
+    public Sounds.SoundTag soundToPlay;
 
     Item portal;
-
 
 
     private int keysCount = 0;
 
     private int heroHealth = 1;
 
+    private boolean gameOver = false;
+
     private int boxCount = 0;
 
-    public Vector2 flyToPortal;
+    public Vector2 portalCenter;
     public Vector2 gettingKeyPosition;
-
 
 
     public LogicProcessor() {
@@ -60,17 +55,18 @@ public class LogicProcessor {
         if (fixture.getUserData().equals("damage")) {
             heroHealth--;
             if (heroHealth == 0) {
-                soundToPlay = GameScreen.SoundTag.GAME_OVER;
+                soundToPlay = Sounds.SoundTag.GAME_OVER;
             }
             return;
         }
 
         Item item = getItem(fixture.getBody().getPosition());
+        if (item == null) return;
         if (item.isUsed) return;
 
         if (item.type == Objects.KEY) {
             keysCount++;
-            soundToPlay = GameScreen.SoundTag.GET_KEY;
+            soundToPlay = Sounds.SoundTag.GET_KEY;
             item.isUsed = true;
 
 
@@ -84,19 +80,24 @@ public class LogicProcessor {
             boxCount--;
             if (boxCount == 0 && portal != null) {
                 portal.isUsed = false;
-                soundToPlay = GameScreen.SoundTag.WIN;
+                soundToPlay = Sounds.SoundTag.PORTAL;
             } else
-                soundToPlay = GameScreen.SoundTag.GET_KEY;
+                soundToPlay = Sounds.SoundTag.GET_KEY;
         } else if (item.type == Objects.PORTAL) {
-            flyToPortal = new Vector2(portal.rect.x+portal.rect.width/2, portal.rect.y+portal.rect.height/2);
-            soundToPlay = GameScreen.SoundTag.WIN;
-        }
+            portalCenter = new Vector2(item.rect.x + item.rect.width / 2, item.rect.y + item.rect.height / 2);
+            soundToPlay = Sounds.SoundTag.WIN;
+            gameOver=true;
 
+        }
     }
 
 
     public boolean isAlive() {
         return heroHealth > 0;
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
     }
 
     public int getKeysCount() {

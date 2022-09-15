@@ -48,40 +48,34 @@
   </object>
  </objectgroup>
  <objectgroup id="11" name="dangers">
-  <object id="42" x="102" y="305.667" width="758" height="6.66667"/>
   <object id="51" x="1001.33" y="234.75" width="32.3333" height="4.91667"/>
   <object id="58" x="4.66667" y="295.333" width="76" height="4.66667"/>
  </objectgroup>
  <objectgroup id="5" name="objects">
-  <object id="5" x="83" y="272.583" width="571.5" height="13.1667"/>
-  <object id="7" x="751.25" y="272.5" width="111.75" height="15.25"/>
-  <object id="8" x="863.5" y="240" width="65" height="81.25"/>
-  <object id="9" x="927" y="221.583" width="80" height="14.4167"/>
-  <object id="14" x="1006" y="241.833" width="242" height="46.1667"/>
-  <object id="16" x="373.61" y="189.174" width="40.5" height="13"/>
-  <object id="17" x="444.583" y="124.417" width="45.5" height="7.5"/>
-  <object id="22" x="436.167" y="220.083" width="54.6667" height="3.5"/>
-  <object id="24" x="2" y="160.5" width="79" height="14"/>
-  <object id="31" x="1.5" y="-2" width="2" height="320"/>
-  <object id="33" x="1210.5" y="3.5" width="2" height="237"/>
-  <object id="40" x="4.667" y="313.667" width="854.333" height="5.33333"/>
-  <object id="59" x="5.33333" y="301.333" width="80" height="11.3333"/>
-  <object id="62" x="99.3333" y="139.333" width="74.6667" height="7.33333"/>
-  <object id="63" x="196.667" y="174" width="154" height="6"/>
-  <object id="64" x="544" y="240" width="79.3333" height="30"/>
+  <object id="5" name="object" x="83" y="272.583" width="571.5" height="13.1667"/>
+  <object id="7" name="object" x="751.25" y="272.5" width="111.75" height="15.25"/>
+  <object id="8" name="object" x="863.5" y="240" width="65" height="81.25"/>
+  <object id="9" name="object" x="927" y="221.583" width="80" height="14.4167"/>
+  <object id="14" name="object" x="1006" y="241.833" width="242" height="46.1667"/>
+  <object id="16" name="object" x="373.61" y="189.174" width="40.5" height="13"/>
+  <object id="17" name="object" x="444.583" y="124.417" width="45.5" height="7.5"/>
+  <object id="22" name="object" x="436.167" y="220.083" width="54.6667" height="3.5"/>
+  <object id="24" name="object" x="2" y="160.5" width="79" height="14"/>
+  <object id="31" name="object" x="1.5" y="-2" width="2" height="320"/>
+  <object id="33" name="object" x="1210.5" y="3.5" width="2" height="237"/>
+  <object id="40" name="object" x="4.667" y="313.667" width="854.333" height="5.33333"/>
+  <object id="59" name="object" x="5.33333" y="301.333" width="80" height="11.3333"/>
+  <object id="62" name="object" x="99.3333" y="139.333" width="74.6667" height="7.33333"/>
+  <object id="63" name="object" x="196.667" y="174" width="154" height="6"/>
+  <object id="64" name="object" x="544" y="240" width="79.3333" height="30"/>
  </objectgroup>
  <objectgroup id="13" name="items">
   <object id="67" name="key" x="1089.69" y="224.932" width="14" height="12.5"/>
-  <object id="68" name="box" x="30.3561" y="135.932" width="26" height="25"/>
   <object id="70" name="portal" x="490.417" y="194.75" width="57.6667" height="87.6667"/>
   <object id="71" name="key" x="991.667" y="201.083" width="14" height="12.5"/>
   <object id="72" name="key" x="540.333" y="39.0833" width="14" height="12.5"/>
   <object id="73" name="key" x="451" y="167.083" width="14" height="12.5"/>
-  <object id="74" name="box" x="83.3333" y="246.167" width="26" height="25"/>
-  <object id="75" name="box" x="820" y="247.833" width="26" height="25"/>
-  <object id="76" name="box" x="454" y="100.167" width="26" height="25"/>
+  <object id="74" name="box" x="94.6666" y="242.167" width="26" height="25"/>
   <object id="77" name="key" x="364.667" y="246.417" width="14" height="12.5"/>
-  <object id="78" name="key" x="436.667" y="245.75" width="14" height="12.5"/>
-  <object id="79" name="key" x="473" y="249.417" width="14" height="12.5"/>
  </objectgroup>
 </map>

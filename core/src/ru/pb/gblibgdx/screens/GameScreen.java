@@ -3,8 +3,6 @@ package ru.pb.gblibgdx.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -18,22 +16,13 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
-import com.badlogic.gdx.scenes.scene2d.actions.ParallelAction;
-import com.badlogic.gdx.scenes.scene2d.actions.RotateToAction;
-import com.badlogic.gdx.scenes.scene2d.actions.ScaleByAction;
+import com.badlogic.gdx.scenes.scene2d.actions.*;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import ru.pb.gblibgdx.*;
 import ru.pb.gblibgdx.Character;
 import ru.pb.gblibgdx.anim.Images;
-
-
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
-
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.addAction;
 
 public class GameScreen implements Screen {
     private final Main main;
@@ -43,20 +32,17 @@ public class GameScreen implements Screen {
     private final Character dino;
     private final Rectangle main_rectangle;
     private int mapWidth;
-    private int mapHeight;
 
     private float dinoRegionWidth, dinoRegionHeight;
 
 
-    Stage stage;
-//    private MyActor myKeyActor;
-    private float keyAnimTime = 1f;
+    private final Stage stage;
+    private final float keyAnimTime = 1f;
 
 
-    private float dinoPerimeter;
-    private Vector2 dinoCenter;
-    private float dinoAutoFlyTime = 2.0f;
-    private float dinoFlyTime = 0f;
+    private final float dinoPerimeter;
+
+    private final float dinoAutoFlyTime = 2.0f;
 
 
     private final OrthographicCamera camera;
@@ -66,6 +52,7 @@ public class GameScreen implements Screen {
 
     private final Texture imgBG;
     private final Texture imgKey;
+    private final Texture imgDino;
 
     private final int[] bg;
     private final int[] l2;
@@ -81,10 +68,9 @@ public class GameScreen implements Screen {
     private static final int heroJumpForce = 20000;
     private static final int forceInJump = 600;
 
-    private final Music music;
-    private final Map<SoundTag, Sound> sounds = new HashMap<>();
 
-    public enum SoundTag {GAME_OVER, WIN, JUMP, GET_KEY}
+    private final Sounds sounds;
+
 
 
     private final Images images;
@@ -95,12 +81,13 @@ public class GameScreen implements Screen {
         logicProcessor = new LogicProcessor();
         physics = new Physics(new MyContactListener(logicProcessor));
 
+        sounds = Sounds.getInstance();
+        sounds.playMusic(true);
 
         stage = new Stage();
-
-
-
         batch = new SpriteBatch();
+
+
         dino = CharactersFactory.getGreenDino(main);
         main_rectangle = new Rectangle(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         dino.setAction(Movable.Actions.IDLE);
@@ -110,6 +97,7 @@ public class GameScreen implements Screen {
 
         imgBG = new Texture("bg.png");
         imgKey = new Texture(Gdx.files.internal("items/key.png"));
+        imgDino = new Texture(Gdx.files.internal("items/dino.png"));
 
         RectangleMapObject t = (RectangleMapObject) map.getLayers().get("settings").getObjects().get("camera");
         camera.position.x = t.getRectangle().x * Physics.PPM;
@@ -160,22 +148,6 @@ public class GameScreen implements Screen {
         int tilePixelWidth = prop.get("tilewidth", Integer.class);
         mapWidth *= tilePixelWidth;
 
-        mapHeight = prop.get("height", Integer.class);
-        tilePixelWidth = prop.get("tilewidth", Integer.class);
-        mapHeight *= tilePixelWidth;
-
-
-        music = Gdx.audio.newMusic(Gdx.files.internal("sounds/mario/super-mario-saundtrek.mp3"));
-        music.setLooping(true);
-        music.setVolume(0.2f);
-        music.play();
-
-
-        sounds.put(SoundTag.GAME_OVER, Gdx.audio.newSound(Gdx.files.internal("sounds/mario/super-mario-game-over.mp3")));
-        sounds.put(SoundTag.WIN, Gdx.audio.newSound(Gdx.files.internal("sounds/mario/win.mp3")));
-        sounds.put(SoundTag.GET_KEY, Gdx.audio.newSound(Gdx.files.internal("sounds/mario/get_key.mp3")));
-        sounds.put(SoundTag.JUMP, Gdx.audio.newSound(Gdx.files.internal("sounds/mario/jump.mp3")));
-
 
     }
 
@@ -203,19 +175,38 @@ public class GameScreen implements Screen {
 
         handleLogic();
 
-        if (logicProcessor.flyToPortal == null) {
+        if (!logicProcessor.isGameOver()) {
+
             batch.draw(dino.getFrame(), heroRect.x * Physics.PPM, heroRect.y * Physics.PPM, dinoRegionWidth, dinoRegionHeight);
-        } else {
-            if (dinoCenter == null) {
-                dinoCenter = new Vector2(heroRect.x + heroRect.width / 2, heroRect.y + heroRect.height);
-            }
-            float x = (logicProcessor.flyToPortal.x - dinoCenter.x) / dinoAutoFlyTime;
+        }
+
+        if (logicProcessor.portalCenter != null) {
 
 
+            final MyActor myKeyActor = new MyActor(imgDino);
+            stage.addActor(myKeyActor);
 
+            myKeyActor.setPosition(heroRect.x * Physics.PPM - camera.position.x + camera.viewportWidth / 2, heroRect.y * Physics.PPM - camera.position.y + camera.viewportHeight / 2);
 
-            //todo:
+            myKeyActor.setRotation(0);
 
+            MoveToAction mta = new MoveToAction();
+
+            mta.setPosition(logicProcessor.portalCenter.x - camera.position.x + camera.viewportWidth / 2, logicProcessor.portalCenter.y - camera.position.y + camera.viewportHeight / 2);
+            mta.setDuration(dinoAutoFlyTime);
+            ScaleByAction sba = new ScaleByAction();
+            sba.setAmount(-1f);
+//            sba.set
+
+            sba.setDuration(dinoAutoFlyTime);
+
+            RotateToAction rta = new RotateToAction();
+            rta.setRotation(-360f);
+            rta.setDuration(dinoAutoFlyTime);
+            ParallelAction pa = new ParallelAction(mta, sba, rta);
+            myKeyActor.addAction(pa);
+            sounds.playMusic(false);
+            logicProcessor.portalCenter = null;
         }
         batch.end();
 
@@ -226,6 +217,7 @@ public class GameScreen implements Screen {
         handleControls();
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
+
 
 
     }
@@ -249,23 +241,17 @@ public class GameScreen implements Screen {
         heroRect.y = hero.getPosition().y - heroRect.height / 2 / Physics.PPM;
 
 
-        if (logicProcessor.soundToPlay != null) {
-            sounds.get(logicProcessor.soundToPlay).play(0.5f);
-            logicProcessor.soundToPlay = null;
 
-        }
+        sounds.play(logicProcessor.soundToPlay);
+        logicProcessor.soundToPlay=null;
+
 
         if (!logicProcessor.isAlive()) {
             dinoRegionHeight = heroRect.height;
             dinoRegionWidth = dinoPerimeter - dinoRegionHeight;
             dino.setAction(Movable.Actions.DEAD);
-            music.stop();
+            sounds.playMusic(false);
         }
-
-
-//        if (logicProcessor.isBoxOpen) {
-//            music.stop();
-//        }
 
 
         images.addDeltaTime(Gdx.graphics.getDeltaTime());
@@ -290,10 +276,9 @@ public class GameScreen implements Screen {
 
         if (logicProcessor.gettingKeyPosition != null) {
             final MyActor myKeyActor = new MyActor(imgKey);
-            myKeyActor.setVisible(false);
             stage.addActor(myKeyActor);
 
-            myKeyActor.setPosition(heroRect.x*Physics.PPM-camera.position.x +camera.viewportWidth/2, heroRect.y * Physics.PPM -camera.position.y+camera.viewportHeight/2);
+            myKeyActor.setPosition(heroRect.x * Physics.PPM - camera.position.x + camera.viewportWidth / 2, heroRect.y * Physics.PPM - camera.position.y + camera.viewportHeight / 2);
 
             myKeyActor.setRotation(0);
 
@@ -310,10 +295,8 @@ public class GameScreen implements Screen {
             rta.setRotation(360f);
             rta.setDuration(keyAnimTime);
             ParallelAction pa = new ParallelAction(mta, rta);
-            addAction(pa);
-            rta.isComplete();
             myKeyActor.addAction(pa);
-            myKeyActor.setVisible(true);
+
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -322,9 +305,7 @@ public class GameScreen implements Screen {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-
                     stage.getActors().removeIndex(0);
-
                 }
             }).start();
         }
@@ -339,7 +320,25 @@ public class GameScreen implements Screen {
     }
 
     private void handleControls() {
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && logicProcessor.isAlive()) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
+            dispose();
+                   main.setScreen(new GameScreen(main));
+            return;
+        }
+
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            dispose();
+            main.setScreen(new MenuScreen(main));
+            return;
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.M)) {
+            sounds.playMusic(false);
+        }
+
+        if (!logicProcessor.isAlive()) return;
+
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             if (physics.contactListener.isOnGround()) {
                 hero.setLinearVelocity(heroSpeed, hero.getLinearVelocity().y);
 //                hero.applyForceToCenter(9000, 0, true);
@@ -352,14 +351,14 @@ public class GameScreen implements Screen {
             }
             if (dino.getReverse()) {
                 //Сдвигаем сенсор (лечение от застреваний)
-                ((PolygonShape) hero.getFixtureList().get(2).getShape()).setAsBox((heroRect.width / 2 - 0.2f) / Physics.PPM, 5 / Physics.PPM, new Vector2(-1f / Physics.PPM, -heroRect.height / 2 / Physics.PPM), 0);
+                ((PolygonShape) hero.getFixtureList().get(2).getShape()).setAsBox((heroRect.width / 2 - 0.1f) / Physics.PPM, 5 / Physics.PPM, new Vector2(-1f / Physics.PPM, -heroRect.height / 2 / Physics.PPM), 0);
                 dino.setReverse(false);
             }
             dino.setAction(Movable.Actions.RUN);
 
             if (hero.getLinearVelocity().x > heroSpeed) hero.getLinearVelocity().x = heroSpeed;
 
-        } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && logicProcessor.isAlive()) {
+        } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             if (physics.contactListener.isOnGround()) {
                 hero.setLinearVelocity(-heroSpeed, hero.getLinearVelocity().y);
 //                hero.applyForceToCenter(-9000, 0, true);
@@ -377,39 +376,18 @@ public class GameScreen implements Screen {
             dino.setAction(Movable.Actions.RUN);
             if (hero.getLinearVelocity().x < -heroSpeed) hero.getLinearVelocity().x = -heroSpeed;
 
-        } else if (Gdx.input.isKeyPressed(Input.Keys.M)) {
-            music.stop();
-
-        } else if (logicProcessor.isAlive()) {
+        } else {
             if (physics.contactListener.isOnGround())
                 dino.setAction(Movable.Actions.IDLE);
             else
                 dino.setAction(Movable.Actions.JUMP);
         }
 
-
         if (physics.contactListener.isOnGround()) {
-            if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && logicProcessor.isAlive()) {
-                // dino.jump();
-                sounds.get(SoundTag.JUMP).play(0.5f);
+            if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+                sounds.play(Sounds.SoundTag.JUMP);
                 hero.applyForceToCenter(0, heroJumpForce, true);
-//                hero.setLinearVelocity(hero.getLinearVelocity().x, heroJumpSpeed);
             }
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
-            dispose();
-            music.stop();
-            main.setScreen(new GameScreen(main));
-            return;
-        }
-
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            dispose();
-            main.setScreen(new MenuScreen(main));
-            music.stop();
-            return;
         }
     }
 
@@ -441,10 +419,7 @@ public class GameScreen implements Screen {
         imgBG.dispose();
         imgKey.dispose();
         physics.dispose();
-        music.dispose();
-        for (Sound sound : sounds.values()) {
-            sound.dispose();
-        }
+        sounds.playMusic(false);
         images.dispose();
     }
 }
