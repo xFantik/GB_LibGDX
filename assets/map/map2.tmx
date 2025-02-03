@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.9" tiledversion="1.9.1" orientation="orthogonal" renderorder="right-down" width="78" height="52" tilewidth="16" tileheight="16" infinite="0" nextlayerid="14" nextobjectid="87">
+ <tileset firstgid="1" source="tiles.tsx"/>
+ <layer id="3" name="bg" width="78" height="52">
+  <data encoding="base64" compression="zlib">
+   eJztmMlu1EAURct2RAbYMUmAgAXDnkFkWmTB9AMMewYxqbMhfAKELeMy/wL5jCxQwodwC/upXx7ldrnL3aale6SjLleXq9q3q+ySnSOEEEIIIYQQQgghhBBCCCGEEEIIIYQQQmaPOed+Fc5t4HMjh758Cy7DFbha1eeq/gV8CV/B1/BNoK0dJ1ffyTh5oG/bj3gGP9B7Fp6bK/uz59jjNjkcyw67CbdQ/xa+q/Tlraoc4gjGnIcLcFGNL/X2960F2ralbkzB5hY6p6mPJmxukplk1ZRb22tcSsgrllBuo9iprt0bw6j51lVufdA2N8+gg9wkJ+b2LzYzm5tkpcvjMI8+F+BipZSX4NHI/7ct087tFDxtskvNbRn9rcDVSimvwfX/KLfQPW4zC6sz87ncw+f96tkg6zM1tz4YJzfPoCYncR9tDuBvN6yTrORYZ9aEXouTXH+xpOQmz0U9d/yc8ZkchyfgyWxYF1qbMZl59Fqc5PqLJXW+6f2r5ODrbuO7O/CuahPKLpXQPJzG3Bw3N88gG6472U/o/azkKhnp3JzrJrfQPJzG3EzNzc41XdZ7tNA9rYvc+iI1N52H3cfKfW9Sa7RPUnML7WtHPT/33Oxn5knJbafmvrFXI3ObLv7vyVtYuL/v8SbKLOR2DV5v4Q14szr3UlF6GV6BV4uy/mmkz+Bz+CkrFfrIzb671PfH8zi+AC+qzycN11Z3rZ/R34Oi9CF8BB8XZb1uF6PkJv3Z3KReq8fsKje715PcfgTumV/g1xZ+g9/hLvp6X5R+gNvwY1Fev24X48/scH82N6nX6jFjkLlU987EvrvU8+0P6dbJzQ==
+  </data>
+ </layer>
+ <layer id="1" name="l1" width="78" height="52">
+  <data encoding="base64" compression="zlib">
+   eJztmMlzFUUcx/vlvUDgiAVuV5KwupAFwUuqWNQSLTgIYclBwxKgRIUEEVwCBxSt4sBqwGJJUggEweXmhQPI5k6g0Cr8L1zYi0/XvMbfG96secm7/D5Vn+qZnunXM9+anp7XxiiKoiiKoiiKoiiKoiiKoiiKoiiKoiiKoiiKoijlpAKzoswlKCsCtisj+vGbjXE86rr95WBTh/WibEhQ1gVsN0b047c+xvHtGdMUdh+nM4X77+IG7MBR+Ai+J7T164WbRNtu+urB3pA+hxvTVGUePt6aCd73Hzstft9/zHEEvwy6iMLfKkpLwtyO4jHj5TUDZxovnzi5vUNfa3FdRJ/FSJLb9oDcRmRMZxXmqLvG/h8x+g3KLUa7Jrn/J84yXn7yWWs3hbm5UuY2EJLk1hKQ23Qym4YN1DXi1Rj9ps0tbBzbMSvHqszL1vfhiXTdPkSS3MLaOW5RfztGJv7nJi5h49jm5saqe+7847MzTadFKGVu3diDvd52Z1i/Ue//NNjc3PiUmcnctsT4nTY+FlbiqlzwOa2+6x9Ibv14xXjjtD8it6j3fxrcHHE8b58ok4zPLvLah/uHKDdLJfVtuBJH8s4bninZ0IjNE/hkgvMP8DF4EA/hYezGHuytCG4TkVuTCSAoNzsvdOE+fJ7MnitDbi/jnATn/0o+v+HveBn78QpejZmb/50TkVvRYyvIa2rKubJUJH3e7B+PDFZgFnNYicNwI/eyyadlirh//ztHZjPCG3dFj0ncOC0nSZ63Z8jmWZyCdViPDdiIU7GPezmR8H5kptO9cfcAmdtqxuKq/HdvZX6clpMkub1ONm9gKy7FZbgcV2AbXude/irh/chMvyCz/eK791KZc3sfP4h57g6y2Ym7cDfuwb34OXYN8sLBz2T2E/6Icj6tSjGf/jLAzEfjV3gSH8PHI84/QzZn8Qc8h+fxAl7ES0Ox4JJHzqfThmA+tTmNwUeNl5NbH7HfvRtN9P/Rv8nmH/wX/8MbeBNv4e0B5jaO9uOzXml5hfn5Vd8cPZf9eTgRJ4XM33f4jbvCezGv7U1cg2/h26J+Nr6AL+JL5v/1EPe/dIY4Ls9zZTXftjVYi+NwPE7AiTgp5Ls3Dgu5t0VZr7R8SC4fYadwM27BJdgSkttkruUp4dP4Ked/FtLGcgAP4iE8LOrt89VhCteL2k3hOkiHqPd7HRdwDc24EBfhYlyCLQG51aZ8l5ziHr/Gb4Tf4ndYk9JaHJv1rMYarM1bHdLO5SZz6RC2m3Rrm9/nvO2bRWwehHlvKS7D5Snavpb1nI8LsDlvGDYTl5kcn27fmmZt0+U+IVPcUrMb9+DeFG23Zj0/xk9wW94w3BqIfL7W+0yztum27wNTGARo
+  </data>
+ </layer>
+ <layer id="2" name="l2" width="78" height="52">
+  <data encoding="base64" compression="zlib">
+   eJzt2LEJQjEQANAY9xBbt3AOC91IXcXf2Okiam3nCqYQbALB6P8B/3twVcjl7pqDhAAAAAAAAAAAAAAAfOvQugCAnnUhLFvXQL1jDOEUW1cxnEt8xzXFrbL3e7r3GNHcAHK2k2He6Qrns1f82jr1tyn0uJh+nvecyflP+3iX+tsX5raqmFuOfTwO80zgv6kvT3fnEpw=
+  </data>
+ </layer>
+ <layer id="7" name="interface" width="78" height="52">
+  <data encoding="base64" compression="zlib">
+   eJztwzENAAAIA7BhFv8SOBGxNmkCAAAAAAAAAAAANNn5AAAAAADQ5AAqoQE2
+  </data>
+ </layer>
+ <objectgroup id="4" name="settings">
+  <object id="52" name="camera_1" x="430.417" y="718.333">
+   <point/>
+  </object>
+  <object id="53" name="hero" x="191.083" y="750.157" width="34" height="24.9697">
+   <properties>
+    <property name="BodyType" value="DynamicBody"/>
+    <property name="friction" type="float" value="0"/>
+    <property name="restitution" type="float" value="0"/>
+   </properties>
+  </object>
+  <object id="54" name="hero_bottom" x="191.305" y="774.285" width="33.6478" height="1.08845">
+   <properties>
+    <property name="BodyType" value="DynamicBody"/>
+    <property name="friction" type="float" value="5"/>
+    <property name="restitution" type="float" value="0"/>
+   </properties>
+  </object>
+  <object id="55" name="car" x="146.083" y="762.666" width="32.6667" height="18.6667">
+   <properties>
+    <property name="BodyType" value="DynamicBody"/>
+    <property name="friction" type="float" value="2"/>
+    <property name="restitution" type="float" value="0.3"/>
+   </properties>
+  </object>
+  <object id="85" name="camera_2" x="436" y="393">
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="11" name="dangers">
+  <object id="51" x="1001.33" y="746.75" width="32.3333" height="4.91667"/>
+  <object id="58" x="4.66667" y="807.333" width="76" height="4.66667"/>
+ </objectgroup>
+ <objectgroup id="5" name="objects">
+  <object id="5" name="object" x="83" y="784.583" width="571.5" height="13.1667"/>
+  <object id="7" name="object" x="751.25" y="784.5" width="111.75" height="15.25"/>
+  <object id="8" name="object" x="863.5" y="752" width="65" height="81.25"/>
+  <object id="9" name="object" x="927" y="733.583" width="80" height="14.4167"/>
+  <object id="14" name="object" x="1006" y="753.833" width="242" height="46.1667"/>
+  <object id="16" name="object" x="373.61" y="701.174" width="40.5" height="13"/>
+  <object id="17" name="object" x="444.583" y="636.417" width="45.5" height="7.5"/>
+  <object id="22" name="object" x="436.167" y="732.083" width="54.6667" height="3.5"/>
+  <object id="24" name="object" x="2" y="672.5" width="79" height="14"/>
+  <object id="31" name="object" x="1.5" y="510" width="2" height="320"/>
+  <object id="33" name="object" x="1210.5" y="515.5" width="2" height="237"/>
+  <object id="40" name="object" x="4.667" y="825.667" width="854.333" height="5.33333"/>
+  <object id="59" name="object" x="5.33333" y="813.333" width="80" height="11.3333"/>
+  <object id="62" name="object" x="99.3333" y="651.333" width="74.6667" height="7.33333"/>
+  <object id="63" name="object" x="196.667" y="686" width="154" height="6"/>
+  <object id="64" name="object" x="544" y="752" width="79.3333" height="30"/>
+  <object id="80" name="object" x="445.25" y="637.25" width="45.5" height="7.5"/>
+  <object id="81" name="object" x="369.25" y="556.25" width="45.5" height="7.5"/>
+  <object id="82" name="object" x="4.8335" y="509.333" width="344.333" height="5.33333"/>
+  <object id="83" name="object" x="417.834" y="510.333" width="256.333" height="5.33333"/>
+  <object id="84" name="object" x="736.833" y="510.333" width="273.333" height="7.33333"/>
+  <object id="86" name="object" x="213.25" y="607.25" width="111.5" height="7.5"/>
+ </objectgroup>
+ <objectgroup id="13" name="items">
+  <object id="67" name="key" x="1089.69" y="736.932" width="14" height="12.5"/>
+  <object id="70" name="portal" x="490.417" y="706.75" width="57.6667" height="87.6667"/>
+  <object id="71" name="key" x="991.667" y="713.083" width="14" height="12.5"/>
+  <object id="72" name="key" x="540.333" y="551.083" width="14" height="12.5"/>
+  <object id="73" name="key" x="451" y="679.083" width="14" height="12.5"/>
+  <object id="74" name="box" x="94.6666" y="754.167" width="26" height="25"/>
+  <object id="77" name="key" x="364.667" y="758.417" width="14" height="12.5"/>
+ </objectgroup>
+</map>

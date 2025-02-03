@@ -3,9 +3,11 @@ package ru.pb.gblibgdx.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -22,6 +24,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import ru.pb.gblibgdx.*;
 import ru.pb.gblibgdx.Character;
 import ru.pb.gblibgdx.anim.Images;
+
 import java.util.Iterator;
 
 public class GameScreen implements Screen {
@@ -42,10 +45,12 @@ public class GameScreen implements Screen {
 
     private final float dinoPerimeter;
 
-    private final float dinoAutoFlyTime = 2.0f;
+    private float dinoToPortalAnimTime = 2.0f;
 
 
     private final OrthographicCamera camera;
+    private final Array<Float> camerasLevels;
+    private float newCameraPos;
 
     private final OrthogonalTiledMapRenderer mapRenderer;
 
@@ -70,7 +75,6 @@ public class GameScreen implements Screen {
 
 
     private final Sounds sounds;
-
 
 
     private final Images images;
@@ -99,9 +103,18 @@ public class GameScreen implements Screen {
         imgKey = new Texture(Gdx.files.internal("items/key.png"));
         imgDino = new Texture(Gdx.files.internal("items/dino.png"));
 
-        RectangleMapObject t = (RectangleMapObject) map.getLayers().get("settings").getObjects().get("camera");
-        camera.position.x = t.getRectangle().x * Physics.PPM;
-        camera.position.y = t.getRectangle().y;
+
+        camerasLevels = new Array<>();
+        for (int i = 1; true; i++) {
+            RectangleMapObject t = (RectangleMapObject) map.getLayers().get("settings").getObjects().get("camera_" + i);
+            if (t == null)
+                break;
+            camerasLevels.add(t.getRectangle().y);
+            if (i == 1) {
+                camera.position.y = t.getRectangle().y;
+//                camera.position.x = t.getRectangle().x;
+            }
+        }
 
         bg = new int[2];
         bg[0] = map.getLayers().getIndex("bg");
@@ -159,30 +172,26 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-
-
         ScreenUtils.clear(0.4f, 0.5f, 0.5f, 1f);
+
 
         batch.begin();
         batch.draw(imgBG, camera.position.x - main_rectangle.width / 2, camera.position.y - main_rectangle.height / 2, main_rectangle.width, main_rectangle.height);
 
         updateCamera();
 
+
         mapRenderer.setView(camera);
         mapRenderer.render(bg);
 //        mapRenderer.render();
 
-
         handleLogic();
 
         if (!logicProcessor.isGameOver()) {
-
             batch.draw(dino.getFrame(), heroRect.x * Physics.PPM, heroRect.y * Physics.PPM, dinoRegionWidth, dinoRegionHeight);
         }
 
         if (logicProcessor.portalCenter != null) {
-
-
             final MyActor myKeyActor = new MyActor(imgDino);
             stage.addActor(myKeyActor);
 
@@ -193,21 +202,21 @@ public class GameScreen implements Screen {
             MoveToAction mta = new MoveToAction();
 
             mta.setPosition(logicProcessor.portalCenter.x - camera.position.x + camera.viewportWidth / 2, logicProcessor.portalCenter.y - camera.position.y + camera.viewportHeight / 2);
-            mta.setDuration(dinoAutoFlyTime);
+            mta.setDuration(dinoToPortalAnimTime);
             ScaleByAction sba = new ScaleByAction();
             sba.setAmount(-1f);
-//            sba.set
-
-            sba.setDuration(dinoAutoFlyTime);
+            sba.setDuration(dinoToPortalAnimTime);
 
             RotateToAction rta = new RotateToAction();
             rta.setRotation(-360f);
-            rta.setDuration(dinoAutoFlyTime);
+            rta.setDuration(dinoToPortalAnimTime);
             ParallelAction pa = new ParallelAction(mta, sba, rta);
             myKeyActor.addAction(pa);
             sounds.playMusic(false);
             logicProcessor.portalCenter = null;
         }
+
+
         batch.end();
 
         mapRenderer.render(l2);
@@ -220,6 +229,13 @@ public class GameScreen implements Screen {
 
 
 
+        if (logicProcessor.isGameOver()) {
+            dinoToPortalAnimTime -= Gdx.graphics.getDeltaTime();
+            if (dinoToPortalAnimTime < 0) {
+
+            }
+        }
+
     }
 
     private void updateCamera() {
@@ -229,10 +245,33 @@ public class GameScreen implements Screen {
         else if (camera.position.x > mapWidth - main_rectangle.width / 2)
             camera.position.x = mapWidth - main_rectangle.width / 2;
 
+        newCameraPos = findNearestCamera();
+        if (camera.position.y - camera.viewportHeight / 3 > heroRect.y * Physics.PPM)
+            camera.position.y = heroRect.y * Physics.PPM + camera.viewportHeight / 3;
+        if (Math.abs(camera.position.y - newCameraPos) > 5) {
+            if (camera.position.y > newCameraPos)
+                camera.position.y -= 2;
+            else camera.position.y += 2;
+        }
         camera.update();
-
         batch.setProjectionMatrix(camera.combined);
     }
+
+    private float findNearestCamera() {
+        float dinoY = heroRect.y * Physics.PPM;
+
+        float minDistance = Float.MAX_VALUE - 1000;
+        float nearest = camerasLevels.get(0);
+
+        for (int i = 0; i < camerasLevels.size; i++) {
+            if (Math.abs(camerasLevels.get(i) - dinoY) < minDistance) {
+                minDistance = Math.abs(camerasLevels.get(i) - dinoY);
+                nearest = camerasLevels.get(i);
+            }
+        }
+        return nearest;
+    }
+
 
     private void handleLogic() {
         dino.move(Gdx.graphics.getDeltaTime());
@@ -241,9 +280,8 @@ public class GameScreen implements Screen {
         heroRect.y = hero.getPosition().y - heroRect.height / 2 / Physics.PPM;
 
 
-
         sounds.play(logicProcessor.soundToPlay);
-        logicProcessor.soundToPlay=null;
+        logicProcessor.soundToPlay = null;
 
 
         if (!logicProcessor.isAlive()) {
@@ -322,7 +360,7 @@ public class GameScreen implements Screen {
     private void handleControls() {
         if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
             dispose();
-                   main.setScreen(new GameScreen(main));
+            main.setScreen(new GameScreen(main));
             return;
         }
 

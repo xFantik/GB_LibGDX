@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.9" tiledversion="1.9.1" orientation="orthogonal" renderorder="right-down" width="78" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="14" nextobjectid="80">
+<map version="1.9" tiledversion="1.9.1" orientation="orthogonal" renderorder="right-down" width="78" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="14" nextobjectid="84">
  <tileset firstgid="1" source="tiles.tsx"/>
  <layer id="3" name="bg" width="78" height="20">
   <data encoding="base64" compression="zlib">
@@ -22,7 +22,7 @@
   </data>
  </layer>
  <objectgroup id="4" name="settings">
-  <object id="52" name="camera" x="430.417" y="206.333">
+  <object id="52" name="camera_1" x="430.417" y="206.333">
    <point/>
   </object>
   <object id="53" name="hero" x="191.083" y="238.157" width="34" height="24.9697">
@@ -68,14 +68,16 @@
   <object id="62" name="object" x="99.3333" y="139.333" width="74.6667" height="7.33333"/>
   <object id="63" name="object" x="196.667" y="174" width="154" height="6"/>
   <object id="64" name="object" x="544" y="240" width="79.3333" height="30"/>
+  <object id="82" name="object" x="753.5" y="278.375" width="4" height="41.25"/>
+  <object id="83" name="object" x="631.5" y="280.375" width="23" height="32.25"/>
  </objectgroup>
  <objectgroup id="13" name="items">
   <object id="67" name="key" x="1089.69" y="224.932" width="14" height="12.5"/>
   <object id="70" name="portal" x="490.417" y="194.75" width="57.6667" height="87.6667"/>
   <object id="71" name="key" x="991.667" y="201.083" width="14" height="12.5"/>
   <object id="72" name="key" x="540.333" y="39.0833" width="14" height="12.5"/>
-  <object id="73" name="key" x="451" y="167.083" width="14" height="12.5"/>
   <object id="74" name="box" x="94.6666" y="242.167" width="26" height="25"/>
-  <object id="77" name="key" x="364.667" y="246.417" width="14" height="12.5"/>
+  <object id="80" name="box" x="25" y="133.5" width="26" height="25"/>
+  <object id="81" name="box" x="228" y="144.5" width="26" height="25"/>
  </objectgroup>
 </map>

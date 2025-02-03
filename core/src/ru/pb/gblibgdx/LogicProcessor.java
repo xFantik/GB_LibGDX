@@ -86,7 +86,7 @@ public class LogicProcessor {
         } else if (item.type == Objects.PORTAL) {
             portalCenter = new Vector2(item.rect.x + item.rect.width / 2, item.rect.y + item.rect.height / 2);
             soundToPlay = Sounds.SoundTag.WIN;
-            gameOver=true;
+            gameOver = true;
 
         }
     }
@@ -112,11 +112,8 @@ public class LogicProcessor {
     public Item getItem(Vector2 pos) {
         pos.x *= Physics.PPM;
         pos.y *= Physics.PPM;
-        System.out.println(pos);
-
-
         for (Item item : items) {
-            System.out.println(item);
+      //      System.out.println(item);
             if (item.rect.contains(pos)) {
                 return item;
             }
